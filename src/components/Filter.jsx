@@ -5,14 +5,7 @@ import { InputLabel, MenuItem, Select } from "@mui/material";
 import {Tooltip, Button} from '@mui/material'
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
-function Filter() {
-  const categories = [
-    { categoryId: 1, categoryName: "Electronics" },
-    { categoryId: 2, categoryName: "Clothing" },
-    { categoryId: 3, categoryName: "Furniture" },
-    { categoryId: 4, categoryName: "Books" },
-    { categoryId: 5, categoryName: "Toys" },
-  ];
+function Filter({categories}) {
   const [searchParams] = useSearchParams();
   const params = new URLSearchParams(searchParams);
   const pathname = useLocation().pathname;

@@ -1,9 +1,9 @@
 import api from "../../api/api"
 
-export const fetchProducts = () => async (dispatch)=>{
+export const fetchProducts = (queryString) => async (dispatch)=>{
     try{
         dispatch({type: 'IS_FETCHING'})
-        const {data} = await api.get(`/public/products`);
+        const {data} = await api.get(`/public/products?${queryString}`);
         dispatch({
             type: "FETCH_PRODUCTS",
             payload: data.content,
@@ -15,6 +15,28 @@ export const fetchProducts = () => async (dispatch)=>{
         })
         dispatch({type: 'IS_SUCCESS'})
     }catch(error){
-        dispatch({type: 'IS_ERROR', payload: error.message})
+        dispatch({
+            type: 'IS_ERROR', 
+            payload: error?.response?.data?.message || "Failed to fecth product"
+        })
     }
 }
+
+export const fetchCategoris = () => async (dispatch)=>{
+    try{
+        dispatch({type: 'CATEGORY_LOADER'})
+        const {data} = await api.get(`/public/categories`);
+        dispatch({
+            type: "FETCH_CATEGORIES",
+            payload: data.content,
+        })
+        dispatch({type: 'CATEGORY_SUCCESS'})
+    }catch(error){
+        console.log(error)
+        dispatch({
+            type: 'IS_ERROR', 
+            payload: error?.response?.data?.message || "Failed to fecth category"
+        })
+    }
+}
+
