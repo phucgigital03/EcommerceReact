@@ -1,17 +1,18 @@
 
 
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import ProductCard from './ProductCard';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCategoris, fetchProducts } from '../store/actions';
+import { fetchCategoris } from '../store/actions';
 import Filter from './Filter';
-import useProductFilter from './useProductFilter';
+import useProductFilter from './useProductFilter.js';
 import Loader from './Loader';
+import Paginations from './Paginations';
 
 function Products() {
     const { isLoading,errorMessage } = useSelector(state => state.errors)
-    const { products,categories } = useSelector(state => state.products)
+    const { products,categories,pagination } = useSelector(state => state.products)
     const dispatch = useDispatch();
 
     useProductFilter();
@@ -46,6 +47,12 @@ function Products() {
                 </div>
             )
             }
+            <div className='flex justify-center pt-10'>
+                <Paginations 
+                    numberOfPage={pagination?.totalPages}
+                    totalElements={pagination?.totalElements}
+                />
+            </div>
         </div>
     )
 }

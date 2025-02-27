@@ -8,13 +8,16 @@ const useProductFilter = ()=>{
     const [searchParams] = useSearchParams();
     const dispatch = useDispatch();
 
-
     useEffect(()=>{
         const params = new URLSearchParams();
         const currentPage = searchParams.get("page")  
                         ? Number(searchParams.get("page"))
                         : 1;
         params.set("pageNumber",currentPage - 1);
+        const sizePage = searchParams.get("pageSize")
+                        ? Number(searchParams.get("pageSize"))
+                        : 2;
+        params.set("pageSize", sizePage);
 
         const sortOrder = searchParams.get("sortby") || "asc";
         params.set("sortBy","price");

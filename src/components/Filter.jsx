@@ -1,11 +1,11 @@
 import { FormControl } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FiArrowDown, FiArrowUp, FiRefreshCw, FiSearch } from "react-icons/fi";
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import {Tooltip, Button} from '@mui/material'
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
-function Filter({categories}) {
+function Filter({ categories }) {
   const [searchParams] = useSearchParams();
   const params = new URLSearchParams(searchParams);
   const pathname = useLocation().pathname;
