@@ -4,14 +4,19 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import { FaBeer } from 'react-icons/fa'
 import Products from './components/products/Products'
+import Home from './components/homes/Home'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <Products/>
-    </>
+    <Router>
+      <Routes>
+        <Route path='/' element={<Home/>}/>
+        <Route path='/products' element={<Products/>}/>
+      </Routes>
+    </Router>
   )
 }
 
