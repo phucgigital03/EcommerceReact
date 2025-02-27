@@ -19,7 +19,7 @@ function NavBar() {
 
         <ul
           className={`flex flex-col gap-4 absolute left-0 top-[70px] shadow-md transition-all duration-150 bg-custom-gradient text-white w-full px-4
-                    sm:flex-row sm:items-center sm:gap-10 sm:static sm:shadow-none sm:h-fit sm:bg-none sm:w-fit sm:px-0 
+                    sm:flex-row sm:items-center sm:gap-10 sm:static sm:shadow-none sm:h-[40px] sm:bg-none sm:w-fit sm:px-0 
                     ${
                         navbarOpen ? "h-fit sm:pb-0 pb-5" : "h-0 overflow-hidden"
                     }`}
