@@ -40,3 +40,25 @@ export const fetchCategoris = () => async (dispatch)=>{
     }
 }
 
+export const addToCart = (data, qty = 1, toast) => (dispatch, getState) => {
+    const { products } = getState().products;
+    const productStock = products.find((product)=>{
+        return product.productId === data.productId
+    })
+
+    if(productStock){
+        const checkStock = productStock.quantity >= qty;
+        if(checkStock){
+            dispatch({
+                type: 'ADD_TO_CART',
+                payload: {...data, quantity: 1}
+            })
+            toast.success(`${data?.productName} added successfully`)
+            localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart))
+        }else{
+            toast.error(`Out of stock`)
+        }
+    }else{
+        toast.error(`Product is not existing`)
+    }
+}
