@@ -3,6 +3,7 @@ import { useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import ItemContent from "./ItemContent";
 import CartEmpty from "./CartEmpty";
+import { formatPrice } from "../../utils/formatPrice";
 
 
 function Cart() {
@@ -59,7 +60,7 @@ function Cart() {
         <div className="flex flex-col text-sm gap-1">
           <div className="flex justify-between w-full md:text-lg text-sm font-semibold">
             <span>Subtotal</span>
-            <span>$400</span>
+            <span>{formatPrice(Number(newCart?.totalPrice))}</span>
           </div>
           <p className="text-gray-500">Taxes and shipping calculated at checkout</p>
           

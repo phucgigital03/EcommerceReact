@@ -4,6 +4,7 @@ import SetQuantity from "./SetQuantity";
 import { useDispatch } from "react-redux";
 import { decreaseCartQuantity, increaseCartQuantity, removeFromCart } from "../../store/actions";
 import toast from "react-hot-toast";
+import { formatPrice } from "../../utils/formatPrice";
 
 function ItemContent({
   description,
@@ -77,7 +78,7 @@ function ItemContent({
       </div>
 
       <div className="justify-self-center lg:text-[17px] text-sm text-slate-600 font-semibold">
-        {Number(specialPrice)}
+        {formatPrice(Number(specialPrice))}
       </div>
 
       <div className="justify-self-center">
@@ -110,7 +111,7 @@ function ItemContent({
       </div>
 
       <div className="justify-self-center lg:text-[17px] text-sm text-slate-600 font-semibold">
-        {Number(currentQuantity) * Number(specialPrice)}
+        {formatPrice(Number(currentQuantity) * Number(specialPrice))}
       </div>
     </div>
   );
