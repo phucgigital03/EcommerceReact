@@ -62,3 +62,76 @@ export const addToCart = (data, qty = 1, toast) => (dispatch, getState) => {
         toast.error(`Product is not existing`)
     }
 }
+
+export const increaseCartQuantity = (data,toast,currentQuantity,setCurrentQuantity) => 
+    (dispatch,getState) => {
+        // find profuct
+        const { products } = getState().products;
+        console.log(products)
+        const productStock = products.find((item)=>{
+            return item.productId === data.productId
+        })
+
+        if(productStock){
+            const checkStock = productStock.quantity >= currentQuantity + 1;
+
+            if(checkStock){
+                const newQuantity = currentQuantity + 1;
+                // update State at ItemContent
+                setCurrentQuantity(newQuantity)
+
+                // update State at Redux
+                dispatch({
+                    type: "ADD_TO_CART",
+                    payload: {...data, quantity: newQuantity}
+                })
+                // update localStorage
+                toast.success(`${data.productName} increased 1 quantity`)
+                localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart))
+            }else{
+                // 
+                toast.error("Quantity Reached To Limit")
+            }
+            
+        }else{
+            // 
+            toast.error("Product is not existing")
+        }
+    }
+
+
+export const decreaseCartQuantity = (data, newQuantity, toast) => 
+    (dispatch,getState)=>{
+        // find profuct
+        const { products } = getState().products;
+        console.log(products)
+        const productStock = products.find((item)=>{
+            return item.productId === data.productId
+        })
+
+        if(productStock){
+            // update State at Redux
+            dispatch({
+                type: "ADD_TO_CART",
+                payload: {...data, quantity: newQuantity}
+            })
+            // update localStorage
+            toast.success(`${data.productName} decreased 1 quantity`)
+            localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart))
+        }else{
+            // 
+            toast.error("Product is not existing")
+        }
+    }
+
+
+export const removeFromCart = (data, toast) => (dispatch, getState)=>{
+    dispatch({
+        type: 'REMOVE_ITEM_CART',
+        payload: data
+    })
+    toast.success(`${data.productName} removed successfully`)
+    localStorage.setItem("cartItems",JSON.stringify(getState().carts.cart))
+}
+
+

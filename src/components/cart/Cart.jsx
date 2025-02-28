@@ -1,8 +1,24 @@
 import { MdArrowBack, MdShoppingCart } from "react-icons/md"
+import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
+import ItemContent from "./ItemContent";
+import CartEmpty from "./CartEmpty";
 
 
 function Cart() {
+  // const dispatch = useDispatch();
+  const { cart } = useSelector(state => state.carts)
+
+  const newCart = { ...cart }
+
+  newCart.totalPrice = cart?.reduce(
+    (acc,cur) => acc + Number(cur?.specialPrice) * Number(cur?.quantity)
+  , 0)
+
+  if(!cart || cart.length === 0){
+    return <CartEmpty/>
+  }
+
   return (
     <div className="lg:px-14 sm:px-8 px-4 py-10">
       <div className="mb-10 flex flex-col items-center">
@@ -26,9 +42,16 @@ function Cart() {
             Quantity
           </div>
 
-          <div className="justify-self-end text-lg text-gray-800 ">
+          <div className="justify-self-center text-lg text-gray-800 ">
             Total
           </div>
+      </div>
+
+      <div>
+        {
+          cart && cart.length > 0 && 
+          cart.map((item) => <ItemContent key={item?.productId} {...item}/>)
+        }
       </div>
 
       <div className="border-t-[1.5px] border-slate-200 py-4 flex flex-col sm:flex-row sm:px-0 px-2 sm:justify-between gap-4">
@@ -49,7 +72,7 @@ function Cart() {
               Checkout
             </button>
           </Link>
-          
+
           <Link className="mt-2 flex items-center text-gray-500" to={"/products"}>
             <MdArrowBack/>
             <span>Continue shopping</span>
