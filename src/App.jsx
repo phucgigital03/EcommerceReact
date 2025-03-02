@@ -12,6 +12,7 @@ import Cart from './components/cart/Cart'
 import LogIn from './components/auth/LogIn'
 import PrivateRoutes from './components/PrivateRoutes'
 import Register from './components/auth/Register'
+import Checkout from './components/checkouts/checkout'
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
           <Route path='/about' element={<About/>}/>
           <Route path='/contact' element={<Contact/>}/>
           <Route path='/cart' element={<Cart/>}/>
+          <Route path='/checkout' element={<Checkout/>}/>
 
           <Route path='/' element={<PrivateRoutes publicPage/>}>
             <Route path='/login' element={<LogIn/>}/>
