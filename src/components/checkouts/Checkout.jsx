@@ -1,5 +1,6 @@
 import { Step, StepLabel, Stepper } from "@mui/material"
 import { useState } from "react"
+import AddressInfo from "./AddressInfo"
 
 
 function Checkout() {
@@ -22,6 +23,12 @@ function Checkout() {
                 ))
             }
         </Stepper>
+
+        <div className="mt-5">
+            {activeStep === 0 && (
+                <AddressInfo/>
+            )}
+        </div>
     </div>
   )
 }
