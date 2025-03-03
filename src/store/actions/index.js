@@ -30,7 +30,7 @@ export const fetchCategoris = () => async (dispatch) => {
       type: "FETCH_CATEGORIES",
       payload: data.content,
     });
-    dispatch({ type: "CATEGORY_SUCCESS" });
+    dispatch({ type: "IS_SUCCESS" });
   } catch (error) {
     console.log(error);
     dispatch({
@@ -169,29 +169,114 @@ export const registerNewUser =
       setLoader(true);
       const { data } = await api.post("/auth/signup", sendData);
       reset();
-      toast.success(data?.message ||"User registered successfully");
+      toast.success(data?.message || "User registered successfully");
       navigate("/login");
     } catch (error) {
       console.log(error);
-      toast.error(error?.response?.data?.message || error?.response?.data?.password || "Internal server error");
+      toast.error(
+        error?.response?.data?.message ||
+          error?.response?.data?.password ||
+          "Internal server error"
+      );
     } finally {
       setLoader(false);
     }
   };
 
-export const logOutUser = (navigate,toast) => 
-    async (dispatch) => {
-        try {
-            // setLoader(true)
-            const { data } = await api.post("/auth/signout");
-            dispatch({
-                type: "LOGOUT_USER"
-            })
-            localStorage.removeItem("auth")
-            toast.success(`${data?.message || "Sign out successfully"}`)
-            navigate("/login")
-        } catch (error) {
-            console.log(error)
-            toast.error(error?.response?.data?.message || error?.response?.data?.password || "Internal server error")
-        }
+export const logOutUser = (navigate, toast) => async (dispatch) => {
+  try {
+    // setLoader(true)
+    const { data } = await api.post("/auth/signout");
+    dispatch({
+      type: "LOGOUT_USER",
+    });
+    localStorage.removeItem("auth");
+    toast.success(`${data?.message || "Sign out successfully"}`);
+    navigate("/login");
+  } catch (error) {
+    console.log(error);
+    toast.error(
+      error?.response?.data?.message ||
+        error?.response?.data?.password ||
+        "Internal server error"
+    );
+  }
+};
+
+export const addUpdateUserAddress =
+  (sendData, toast, addressId, setOpenAddressModal) =>
+  async (dispatch, getState) => {
+    // const {user} = getState().auth;
+    try {
+      dispatch({
+        type: "BTN_LOADER",
+      });
+      if(addressId){
+        const { data } = await api.put(`/addresses/${addressId}`, sendData);
+        toast.success("Address updated successfully");
+      }else{
+        const { data } = await api.post("/addresses", sendData);
+        toast.success("Address added successfully");
+      }
+      dispatch(getUserAddress())
+      dispatch({
+        type: "IS_SUCESS",
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || "Internal server error");
+      dispatch({
+        type: "IS_ERROR",
+        payload: null,
+      });
+    } finally {
+      setOpenAddressModal(false);
     }
+  };
+
+export const getUserAddress = () => async (dispatch)=>{
+  try {
+    dispatch({type: 'IS_FETCHING'})
+    const { data } = await api.get("/user/addresses")
+    dispatch({
+      type: "USER_ADDRESSES",
+      payload: data
+    })
+    dispatch({type: 'IS_SUCCESS'})
+  } catch (error) {
+    console.log(error)
+    dispatch({
+      type: 'IS_ERROR',
+      payload: error?.response?.data?.message || "Failed to fetch user address"
+    })
+  }
+}
+
+export const deleteUserAddress = (toast, addressId, setOpenDeleteModal) => async (dispatch)=>{
+  try {
+    dispatch({type: 'BTN_LOADER'})
+    await api.delete(`/addresses/${addressId}`)
+    dispatch(getUserAddress())
+    dispatch({
+      type: "CLEAR_SELECTED_USER_ADDRESS"
+    })
+    dispatch({type: 'IS_SUCCESS'})
+    toast.success("Address deleted successfully")
+  } catch (error) {
+    console.log(error)
+    toast.error(error?.response?.data?.message || "Internal server error")
+    dispatch({
+      type: 'IS_ERROR',
+      payload: error?.response?.data?.message || "Failed to delete user address"
+    })
+  }finally{
+    setOpenDeleteModal(false)
+  }
+}
+
+export const selectUserCheckoutAddress = (address)=>{
+  return {
+    type: 'SELECTED_USER_CHECKOUT_ADDRESS',
+    payload: address
+  }
+}

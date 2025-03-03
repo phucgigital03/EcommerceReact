@@ -2,9 +2,10 @@ import { useForm } from "react-hook-form";
 import { IoMdLogIn } from "react-icons/io";
 import InputField from "../shared/InputField";
 import Spinner from "../shared/Spinner";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import toast from "react-hot-toast";
+import { addUpdateUserAddress } from "../../store/actions";
+import { useEffect } from "react";
 
 // "street": "125 Main St",
 // "buildingName": "Sunset Tower",
@@ -12,22 +13,37 @@ import { useState } from "react";
 // "state": "Illinois",
 // "country": "USA",
 // "pincode": "62701"
-function AddAdressForm() {
-  const navigate = useNavigate();
+function AddAdressForm({ address, setOpenAddressModal }) {
   const dispatch = useDispatch();
   const { btnLoader } = useSelector(state => state.errors)
   const {
     register,
     handleSubmit,
-    reset,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "onTouched",
   });
 
   const submitNewAddressHandler = async (data) => {
-    console.log(data)
+        dispatch(addUpdateUserAddress(
+            data,
+            toast,
+            address?.addressId,
+            setOpenAddressModal
+        ))
   };
+
+  useEffect(()=>{
+    if(address?.addressId){
+        setValue("buildingName",address.buildingName)
+        setValue("city",address.city)
+        setValue("state",address.state)
+        setValue("country",address.country)
+        setValue("pincode",address.pincode)
+        setValue("street",address.street)
+    }
+  },[address])
 
   return (
     <div className="">
@@ -38,7 +54,9 @@ function AddAdressForm() {
         <div className="flex items-center justify-center mb-4">
           <IoMdLogIn size={50} />
           <h1 className="text-slate-600 font-bold font-montserrat text-center sm:text-3xl text-xl">
-            Add address
+            {
+                !address?.addressId ? "Add address" : "Update address"
+            }
           </h1>
         </div>
         <hr className="mt-4 h-2" />
