@@ -30,11 +30,11 @@ export const fetchCategoris = () => async (dispatch) => {
       type: "FETCH_CATEGORIES",
       payload: data.content,
     });
-    dispatch({ type: "IS_SUCCESS" });
+    dispatch({ type: "CATEGORY_SUCCESS" });
   } catch (error) {
     console.log(error);
     dispatch({
-      type: "IS_ERROR",
+      type: "CATEGORY_ERROR",
       payload: error?.response?.data?.message || "Failed to fecth category",
     });
   }
@@ -220,14 +220,14 @@ export const addUpdateUserAddress =
       }
       dispatch(getUserAddress())
       dispatch({
-        type: "IS_SUCESS",
+        type: "BTN_LOADER_SUCCESS",
       });
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.message || "Internal server error");
       dispatch({
-        type: "IS_ERROR",
-        payload: null,
+        type: "BTN_LOADER_ERROR",
+        payload: error?.response?.data?.message || "Internal server error"
       });
     } finally {
       setOpenAddressModal(false);
@@ -236,17 +236,17 @@ export const addUpdateUserAddress =
 
 export const getUserAddress = () => async (dispatch)=>{
   try {
-    dispatch({type: 'IS_FETCHING'})
+    dispatch({type: "IS_FETCHING"})
     const { data } = await api.get("/user/addresses")
     dispatch({
       type: "USER_ADDRESSES",
       payload: data
     })
-    dispatch({type: 'IS_SUCCESS'})
+    dispatch({type: "IS_SUCCESS"})
   } catch (error) {
     console.log(error)
     dispatch({
-      type: 'IS_ERROR',
+      type: "IS_ERROR",
       payload: error?.response?.data?.message || "Failed to fetch user address"
     })
   }
@@ -254,19 +254,19 @@ export const getUserAddress = () => async (dispatch)=>{
 
 export const deleteUserAddress = (toast, addressId, setOpenDeleteModal) => async (dispatch)=>{
   try {
-    dispatch({type: 'BTN_LOADER'})
+    dispatch({type: "BTN_LOADER"})
     await api.delete(`/addresses/${addressId}`)
     dispatch(getUserAddress())
     dispatch({
       type: "CLEAR_SELECTED_USER_ADDRESS"
     })
-    dispatch({type: 'IS_SUCCESS'})
+    dispatch({type: "BTN_LOADER_SUCCESS"})
     toast.success("Address deleted successfully")
   } catch (error) {
     console.log(error)
     toast.error(error?.response?.data?.message || "Internal server error")
     dispatch({
-      type: 'IS_ERROR',
+      type: "BTN_LOADER_ERROR",
       payload: error?.response?.data?.message || "Failed to delete user address"
     })
   }finally{
