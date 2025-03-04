@@ -5,11 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserAddress } from "../../store/actions";
 import toast from "react-hot-toast";
 import Loader from "../shared/Loader";
+import ErrorPage from "../shared/ErrorPage";
+import PaymentMethod from "./PaymentMethod";
 
 function Checkout() {
   const dispatch = useDispatch();
   const { addresses, selectedUserAddress } = useSelector((state) => state.auth);
-  const paymentMethod = false;
+  const { paymentMethod } = useSelector(state => state.payment);
   const { isLoading, errorMessage } = useSelector((state) => state.errors);
   const [activeStep, setActiveStep] = useState(0);
   const steps = ["Address", "Payment method", "Order summary", "Payment"];
@@ -50,6 +52,7 @@ function Checkout() {
       ) : (
         <div className="mt-5">
           {activeStep === 0 && <AddressInfo addresses={addresses} />}
+          {activeStep === 1 && <PaymentMethod/>}
         </div>
       )}
 
@@ -86,6 +89,7 @@ function Checkout() {
           </button>
         )}
       </div>
+      {errorMessage && <ErrorPage message={errorMessage}/>}
     </div>
   );
 }

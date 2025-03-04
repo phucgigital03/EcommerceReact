@@ -280,3 +280,51 @@ export const selectUserCheckoutAddress = (address)=>{
     payload: address
   }
 }
+
+export const selectCheckoutPayment = (payment)=>{
+  return {
+    type: 'SELECTED_CHECKOUT_PAYMENT',
+    payload: payment
+  }
+}
+
+export const createUserCart = (sendCartItems) => async (dispatch, getState)=>{
+  try {
+    dispatch({type: "IS_FETCHING"})
+    await api.post("/cart/create",sendCartItems)
+    await dispatch(getUserCart())
+    
+    console.log("Done create or update user cart")
+  } catch (error) {
+    console.log(error)
+    dispatch({
+      type: "IS_ERROR",
+      payload: error?.response?.data?.message || "Failed to create user cart"
+    })
+  }
+}
+
+export const getUserCart = () => async (dispatch, getState)=>{
+  try {
+    dispatch({type: "IS_FETCHING"})
+    const { data } = await api.get("/carts/user/cart");
+
+    dispatch({
+      type: 'GET_USER_CART',
+      payload: data.products,
+      cartId: data.cartId,
+      totalPrice: data.totalPrice,
+    })
+    localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart))
+
+    dispatch({type: "IS_SUCCESS"})
+
+    console.log("get user cart before")
+  } catch (error) {
+    console.log(error)
+    dispatch({
+      type: "IS_ERROR",
+      payload: error?.response?.data?.message || "Failed to get user cart"
+    })
+  }
+}
