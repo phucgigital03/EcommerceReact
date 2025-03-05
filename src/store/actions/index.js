@@ -190,6 +190,9 @@ export const logOutUser = (navigate, toast) => async (dispatch) => {
     dispatch({
       type: "LOGOUT_USER",
     });
+    dispatch({
+      type: "CLEAR_CART_LOGOUT"
+    })
     localStorage.removeItem("auth");
     toast.success(`${data?.message || "Sign out successfully"}`);
     navigate("/login");
@@ -304,7 +307,7 @@ export const createUserCart = (sendCartItems) => async (dispatch, getState)=>{
   }
 }
 
-export const getUserCart = () => async (dispatch, getState)=>{
+export const getUserCart = () => async (dispatch, getState) => {
   try {
     dispatch({type: "IS_FETCHING"})
     const { data } = await api.get("/carts/user/cart");
@@ -326,5 +329,16 @@ export const getUserCart = () => async (dispatch, getState)=>{
       type: "IS_ERROR",
       payload: error?.response?.data?.message || "Failed to get user cart"
     })
+  }
+}
+
+
+export const getUserCartCheck = () => async (dispatch, getState) => {
+  try {
+    const { data } = await api.get("/carts/user/cart");
+    return Promise.resolve(data)
+  } catch (error) {
+    console.log(error)
+    return Promise.reject(error)
   }
 }

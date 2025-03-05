@@ -7,12 +7,15 @@ import toast from "react-hot-toast";
 import Loader from "../shared/Loader";
 import ErrorPage from "../shared/ErrorPage";
 import PaymentMethod from "./PaymentMethod";
+import OrderSummary from "./OrderSummary";
+import Payment from "./Payment";
 
 function Checkout() {
   const dispatch = useDispatch();
   const { addresses, selectedUserAddress } = useSelector((state) => state.auth);
   const { paymentMethod } = useSelector(state => state.payment);
   const { isLoading, errorMessage } = useSelector((state) => state.errors);
+  const { cart,totalPrice } = useSelector((state) => state.carts);
   const [activeStep, setActiveStep] = useState(0);
   const steps = ["Address", "Payment method", "Order summary", "Payment"];
 
@@ -34,6 +37,7 @@ function Checkout() {
     }
     setActiveStep((prevStep) => prevStep + 1);
   };
+  console.log("check out")
 
   return (
     <div className="py-14 min-h-[calc(100vh-100px)]">
@@ -53,6 +57,19 @@ function Checkout() {
         <div className="mt-5">
           {activeStep === 0 && <AddressInfo addresses={addresses} />}
           {activeStep === 1 && <PaymentMethod/>}
+          {activeStep === 2 && <OrderSummary
+              cart={cart}
+              totalPrice={totalPrice}
+              address={selectedUserAddress}
+              paymentMethod={paymentMethod}
+          />}
+          {activeStep === 3 && <Payment 
+              title={paymentMethod === "Stripe" ? "Stripe unavailable" : "Paypal unavailable"}
+              description={paymentMethod === "Stripe" ? 
+                "Stripe method is unavailable. Please choose another payment method" : 
+                "Paypal method is unavailable. Please choose another payment method"
+              }
+          />}
         </div>
       )}
 

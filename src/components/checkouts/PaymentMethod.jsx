@@ -1,35 +1,85 @@
-import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import {
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { createUserCart, selectCheckoutPayment } from "../../store/actions";
+import {
+  createUserCart,
+  getUserCartCheck,
+  selectCheckoutPayment,
+} from "../../store/actions";
 import { useEffect } from "react";
 
 function PaymentMethod() {
   const { paymentMethod } = useSelector((state) => state.payment);
-  const { cart,cartId } = useSelector((state) => state.carts);
-  const { isLoading,errorMessage } = useSelector((state) => state.errors);
+  const { cart, cartId } = useSelector((state) => state.carts);
+  const { isLoading, errorMessage } = useSelector((state) => state.errors);
   const dispatch = useDispatch();
 
-  useEffect(()=>{
-    if(cart.length > 0 && !cartId && !errorMessage){
-        const cartItems = cart.map((item)=>{
-            return {
-                productId: item.productId,
-                quantity: item.quantity
-            }
-        })
-        dispatch(createUserCart(cartItems))
-        console.log(3)
-    }
-  },[dispatch,cartId])
+  async function handleCreateCart(cartItems) {
+    //   const cartItems = [
+    //     {productId: 3, quantity: 1},
+    //     {productId: 4, quantity: 3},
+    //     {productId: 5, quantity: 2},
+    //   ]
+    //   const cartItemsDB = [
+    //     {productId: 3, quantity: 4},
+    //   ]
+    try {
+      const { products: cartItemsDB } = await dispatch(getUserCartCheck());
+      const differenceBetweenObjects = (arr1, arr2) => {
+        const set1 = new Set(arr1.map(item => `${item.productId}-${item.quantity}`));
+        const set2 = new Set(arr2.map(item => `${item.productId}-${item.quantity}`));
+        console.log("cartItems",set1)
+        console.log("cartItemsDB",set2)
+        return [
+          ...arr1.filter(item => !set2.has(`${item.productId}-${item.quantity}`)),
+          ...arr2.filter(item => !set1.has(`${item.productId}-${item.quantity}`))
+        ];
+      };
+      const differences = differenceBetweenObjects(cartItems,cartItemsDB);
+      console.log("differrent cartItem: ",differences);
+      if (cartId === null) {
+        dispatch(createUserCart(cartItems));
+        return;
+      }
+      if(differences.length > 0){
+        dispatch(createUserCart(cartItems));
+        return;
+      }
 
-  const handleChange = (e)=>{
-    dispatch(selectCheckoutPayment(e.target.value))
+    } catch (error) {
+      console.log(error);
+      if (cartId === null && error?.response?.status === 404) {
+        dispatch(createUserCart(cartItems));
+      }
+    }
   }
 
+  useEffect(() => {
+    if (cart.length > 0 && !errorMessage) {
+        const cartItems = cart.map((item) => {
+            return {
+              productId: item.productId,
+              quantity: item.quantity,
+            };
+          });
+      handleCreateCart(cartItems);
+      console.log("call when cart.length > 0 && !errorMessage");
+    }
+    console.log("call effect PaymentMethod");
+  }, [cart, errorMessage, dispatch]);
+
+  const handleChange = (e) => {
+    dispatch(selectCheckoutPayment(e.target.value));
+  };
+
   return (
-    <div 
-        style={{boxShadow: "0.3px 0.3px 4.4px 1.4px gray"}}
-        className="rounded-md py-10 px-4 max-w-md mx-auto flex flex-col justify-center items-center"
+    <div
+      style={{ boxShadow: "0.3px 0.3px 4.4px 1.4px gray" }}
+      className="rounded-md py-10 px-4 max-w-md mx-auto flex flex-col justify-center items-center"
     >
       <h1 className="mb-[12px] text-center text-2xl font-semibold text-gray-500">
         Select payment method

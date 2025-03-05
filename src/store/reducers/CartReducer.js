@@ -47,6 +47,13 @@ export const cartReducer = (state = initialState, action)=>{
                 cartId: action.cartId,
                 totalPrice: action.totalPrice
             }
+        case "CLEAR_CART_LOGOUT":
+            return {
+                ...state,
+                // cart: [],
+                cartId: null,
+                totalPrice: 0
+            }
         default:
             return state;
     }
