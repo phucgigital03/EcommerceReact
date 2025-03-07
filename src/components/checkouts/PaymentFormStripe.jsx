@@ -8,7 +8,7 @@ import Loader from "../shared/Loader";
 import { formatPrice } from "../../utils/formatPrice";
 import { useSelector } from "react-redux";
 
-function PaymentForm({ clientSecret, totalPrice }) {
+function PaymentFormStripe({ clientSecret, totalPrice }) {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState("");
@@ -65,4 +65,4 @@ function PaymentForm({ clientSecret, totalPrice }) {
   );
 }
 
-export default PaymentForm;
+export default PaymentFormStripe;

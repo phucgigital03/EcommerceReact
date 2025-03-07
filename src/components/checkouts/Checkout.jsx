@@ -8,7 +8,8 @@ import Loader from "../shared/Loader";
 import ErrorPage from "../shared/ErrorPage";
 import PaymentMethod from "./PaymentMethod";
 import OrderSummary from "./OrderSummary";
-import Payment from "./Payment";
+import StripePayment from "./StripePayment";
+import PaypalPayment from "./PaypalPayment";
 
 function Checkout() {
   const dispatch = useDispatch();
@@ -63,13 +64,17 @@ function Checkout() {
               address={selectedUserAddress}
               paymentMethod={paymentMethod}
           />}
-          {activeStep === 3 && <Payment 
-              title={paymentMethod === "Stripe" ? "Stripe unavailable" : "Paypal unavailable"}
-              description={paymentMethod === "Stripe" ? 
-                "Stripe method is unavailable. Please choose another payment method" : 
-                "Paypal method is unavailable. Please choose another payment method"
-              }
-          />}
+          {activeStep === 3 && 
+              <>
+                {
+                  paymentMethod === "Stripe" ? (
+                    <StripePayment/>
+                  ) : (
+                    <PaypalPayment/>
+                  )
+                }
+              </>
+          }
         </div>
       )}
 

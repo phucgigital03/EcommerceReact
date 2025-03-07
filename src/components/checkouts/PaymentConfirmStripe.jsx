@@ -6,7 +6,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { stripePaymentConfirmation } from "../../store/actions";
 import toast from "react-hot-toast";
 
-function PaymentConfirm() {
+function PaymentConfirmStripe() {
   const dispatch = useDispatch();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search); //location.search to get query params like ?param1=1
@@ -73,4 +73,4 @@ function PaymentConfirm() {
   );
 }
 
-export default PaymentConfirm;
+export default PaymentConfirmStripe;
