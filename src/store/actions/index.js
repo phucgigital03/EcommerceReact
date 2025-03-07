@@ -278,6 +278,7 @@ export const deleteUserAddress = (toast, addressId, setOpenDeleteModal) => async
 }
 
 export const selectUserCheckoutAddress = (address)=>{
+  localStorage.setItem("CHECKOUT_ADDRESS", JSON.stringify(address));
   return {
     type: 'SELECTED_USER_CHECKOUT_ADDRESS',
     payload: address
@@ -332,7 +333,6 @@ export const getUserCart = () => async (dispatch, getState) => {
   }
 }
 
-
 export const getUserCartCheck = () => async (dispatch, getState) => {
   try {
     const { data } = await api.get("/carts/user/cart");
@@ -342,3 +342,65 @@ export const getUserCartCheck = () => async (dispatch, getState) => {
     return Promise.reject(error)
   }
 }
+
+export const createStripeClientSecret = (totalPrice) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: "IS_FETCHING"
+    })
+    const { data } = await api.post("/order/stripe-client-secret",{
+      amount: Number(totalPrice) * 100,
+      currency: "usd"
+    });
+    dispatch({
+      type: "CLIENT_SECRET_STRIPE",
+      payload: data
+    })
+    localStorage.setItem("client-secret-stripe",JSON.stringify(data))
+    dispatch({
+      type: "IS_SUCCESS"
+    })
+  } catch (error) {
+    console.log(error)
+    dispatch({
+      type: "IS_ERROR",
+      payload: error?.response?.data?.message || "Failed to create client secret"
+    })
+  }
+}
+
+export const stripePaymentConfirmation = (sendData,setErrorMessage,setLoading,toast) => 
+  async (dispatch, getState) => {
+    try {
+      const { data } = await api.post("/order/users/payments/online",sendData);
+      console.log(data)
+      if(data){
+        localStorage.removeItem("CHECKOUT_ADDRESS");
+        localStorage.removeItem("cartItems")
+        localStorage.removeItem("client-secret-stripe")
+        dispatch({
+          type: "CLEAR_CART"
+        })
+        dispatch({
+          type: "REMOVE_CLIENT_SECRET_STRIPE_ADDRESS"
+        })
+        toast.success("Order accepted")
+      }else{
+        setErrorMessage("Payment failed, please try again")
+      }
+    } catch (error) {
+      console.log(error)
+      setErrorMessage("Payment failed, please try again")
+    }
+  }
+
+export const updateCartWithPriceCartId = (totalPrice,cartId)=>{
+  return {
+    type: "UPDATE_PRICE_CART_ID",
+    payload: {
+      totalPrice,
+      cartId
+    }
+  } 
+}
+

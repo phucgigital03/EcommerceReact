@@ -41,8 +41,8 @@ function HeroBanner() {
         {bannerList.map((item,i)=>{
             return (
                 <SwiperSlide key={item.id}>
-                    <div className={`carousel-item rounded-md sm:h-[500px] h-90  ${colors[i]}`}>
-                        <div className="hidden h-full lg:flex justify-center p-8">
+                    <div className={`max-sm:hidden carousel-item rounded-md sm:h-[500px] h-90  ${colors[i]}`}>
+                        <div className="hidden h-full md:flex lg:flex justify-center p-8">
                             <div className="flex justify-center items-center">
                                 <div className="text-center">
                                     <h3 className="text-3xl text-white font-bold">

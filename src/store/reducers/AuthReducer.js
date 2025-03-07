@@ -2,7 +2,8 @@
 const initialState = {
     user: null,
     addresses: [],
-    selectedUserAddress: null
+    selectedUserAddress: null,
+    clientSecret: null
 }
 
 export const authReducer = (state = initialState, action)=>{
@@ -31,6 +32,17 @@ export const authReducer = (state = initialState, action)=>{
         case "CLEAR_SELECTED_USER_ADDRESS":
             return {
                 ...state,
+                selectedUserAddress: null
+            }
+        case "CLIENT_SECRET_STRIPE":
+            return {
+                ...state,
+                clientSecret: action.payload
+            }
+        case "REMOVE_CLIENT_SECRET_STRIPE_ADDRESS":
+            return {
+                ...state,
+                clientSecret: null,
                 selectedUserAddress: null
             }
         default:

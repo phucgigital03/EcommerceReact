@@ -9,12 +9,13 @@ import {
   createUserCart,
   getUserCartCheck,
   selectCheckoutPayment,
+  updateCartWithPriceCartId,
 } from "../../store/actions";
 import { useEffect } from "react";
 
 function PaymentMethod() {
   const { paymentMethod } = useSelector((state) => state.payment);
-  const { cart, cartId } = useSelector((state) => state.carts);
+  const { cart, cartId, totalPrice } = useSelector((state) => state.carts);
   const { isLoading, errorMessage } = useSelector((state) => state.errors);
   const dispatch = useDispatch();
 
@@ -28,7 +29,7 @@ function PaymentMethod() {
     //     {productId: 3, quantity: 4},
     //   ]
     try {
-      const { products: cartItemsDB } = await dispatch(getUserCartCheck());
+      const { products: cartItemsDB, totalPrice: totalPriceDB, cartId: cartIdDB } = await dispatch(getUserCartCheck());
       const differenceBetweenObjects = (arr1, arr2) => {
         const set1 = new Set(arr1.map(item => `${item.productId}-${item.quantity}`));
         const set2 = new Set(arr2.map(item => `${item.productId}-${item.quantity}`));
@@ -48,6 +49,13 @@ function PaymentMethod() {
       if(differences.length > 0){
         dispatch(createUserCart(cartItems));
         return;
+      }
+      if(differences.length === 0){
+        if(!totalPrice || !cartId){
+          console.log("updateCartWithPriceCartId")
+          dispatch(updateCartWithPriceCartId(totalPriceDB,cartIdDB));
+          return;
+        }
       }
 
     } catch (error) {
