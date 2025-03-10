@@ -1,4 +1,5 @@
 import api from "../../api/api";
+import { formatPriceVND } from "../../utils/formatPrice";
 
 export const fetchProducts = (queryString) => async (dispatch) => {
   try {
@@ -191,8 +192,8 @@ export const logOutUser = (navigate, toast) => async (dispatch) => {
       type: "LOGOUT_USER",
     });
     dispatch({
-      type: "CLEAR_CART_LOGOUT"
-    })
+      type: "CLEAR_CART_LOGOUT",
+    });
     localStorage.removeItem("auth");
     toast.success(`${data?.message || "Sign out successfully"}`);
     navigate("/login");
@@ -214,14 +215,14 @@ export const addUpdateUserAddress =
       dispatch({
         type: "BTN_LOADER",
       });
-      if(addressId){
+      if (addressId) {
         const { data } = await api.put(`/addresses/${addressId}`, sendData);
         toast.success("Address updated successfully");
-      }else{
+      } else {
         const { data } = await api.post("/addresses", sendData);
         toast.success("Address added successfully");
       }
-      dispatch(getUserAddress())
+      dispatch(getUserAddress());
       dispatch({
         type: "BTN_LOADER_SUCCESS",
       });
@@ -230,177 +231,216 @@ export const addUpdateUserAddress =
       toast.error(error?.response?.data?.message || "Internal server error");
       dispatch({
         type: "BTN_LOADER_ERROR",
-        payload: error?.response?.data?.message || "Internal server error"
+        payload: error?.response?.data?.message || "Internal server error",
       });
     } finally {
       setOpenAddressModal(false);
     }
   };
 
-export const getUserAddress = () => async (dispatch)=>{
+export const getUserAddress = () => async (dispatch) => {
   try {
-    dispatch({type: "IS_FETCHING"})
-    const { data } = await api.get("/user/addresses")
+    dispatch({ type: "IS_FETCHING" });
+    const { data } = await api.get("/user/addresses");
     dispatch({
       type: "USER_ADDRESSES",
-      payload: data
-    })
-    dispatch({type: "IS_SUCCESS"})
+      payload: data,
+    });
+    dispatch({ type: "IS_SUCCESS" });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     dispatch({
       type: "IS_ERROR",
-      payload: error?.response?.data?.message || "Failed to fetch user address"
-    })
+      payload: error?.response?.data?.message || "Failed to fetch user address",
+    });
   }
-}
+};
 
-export const deleteUserAddress = (toast, addressId, setOpenDeleteModal) => async (dispatch)=>{
-  try {
-    dispatch({type: "BTN_LOADER"})
-    await api.delete(`/addresses/${addressId}`)
-    dispatch(getUserAddress())
-    dispatch({
-      type: "CLEAR_SELECTED_USER_ADDRESS"
-    })
-    dispatch({type: "BTN_LOADER_SUCCESS"})
-    toast.success("Address deleted successfully")
-  } catch (error) {
-    console.log(error)
-    toast.error(error?.response?.data?.message || "Internal server error")
-    dispatch({
-      type: "BTN_LOADER_ERROR",
-      payload: error?.response?.data?.message || "Failed to delete user address"
-    })
-  }finally{
-    setOpenDeleteModal(false)
-  }
-}
+export const deleteUserAddress =
+  (toast, addressId, setOpenDeleteModal) => async (dispatch) => {
+    try {
+      dispatch({ type: "BTN_LOADER" });
+      await api.delete(`/addresses/${addressId}`);
+      dispatch(getUserAddress());
+      dispatch({
+        type: "CLEAR_SELECTED_USER_ADDRESS",
+      });
+      dispatch({ type: "BTN_LOADER_SUCCESS" });
+      toast.success("Address deleted successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || "Internal server error");
+      dispatch({
+        type: "BTN_LOADER_ERROR",
+        payload:
+          error?.response?.data?.message || "Failed to delete user address",
+      });
+    } finally {
+      setOpenDeleteModal(false);
+    }
+  };
 
-export const selectUserCheckoutAddress = (address)=>{
+export const selectUserCheckoutAddress = (address) => {
   localStorage.setItem("CHECKOUT_ADDRESS", JSON.stringify(address));
   return {
-    type: 'SELECTED_USER_CHECKOUT_ADDRESS',
-    payload: address
-  }
-}
+    type: "SELECTED_USER_CHECKOUT_ADDRESS",
+    payload: address,
+  };
+};
 
-export const selectCheckoutPayment = (payment)=>{
+export const selectCheckoutPayment = (payment) => {
   return {
-    type: 'SELECTED_CHECKOUT_PAYMENT',
-    payload: payment
-  }
-}
+    type: "SELECTED_CHECKOUT_PAYMENT",
+    payload: payment,
+  };
+};
 
-export const createUserCart = (sendCartItems) => async (dispatch, getState)=>{
+export const createUserCart = (sendCartItems) => async (dispatch, getState) => {
   try {
-    dispatch({type: "IS_FETCHING"})
-    await api.post("/cart/create",sendCartItems)
-    await dispatch(getUserCart())
-    
-    console.log("Done create or update user cart")
+    dispatch({ type: "IS_FETCHING" });
+    await api.post("/cart/create", sendCartItems);
+    await dispatch(getUserCart());
+
+    console.log("Done create or update user cart");
   } catch (error) {
-    console.log(error)
+    console.log(error);
     dispatch({
       type: "IS_ERROR",
-      payload: error?.response?.data?.message || "Failed to create user cart"
-    })
+      payload: error?.response?.data?.message || "Failed to create user cart",
+    });
   }
-}
+};
 
 export const getUserCart = () => async (dispatch, getState) => {
   try {
-    dispatch({type: "IS_FETCHING"})
+    dispatch({ type: "IS_FETCHING" });
     const { data } = await api.get("/carts/user/cart");
 
     dispatch({
-      type: 'GET_USER_CART',
+      type: "GET_USER_CART",
       payload: data.products,
       cartId: data.cartId,
       totalPrice: data.totalPrice,
-    })
-    localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart))
+    });
+    localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart));
 
-    dispatch({type: "IS_SUCCESS"})
+    dispatch({ type: "IS_SUCCESS" });
 
-    console.log("get user cart before")
+    console.log("get user cart before");
   } catch (error) {
-    console.log(error)
+    console.log(error);
     dispatch({
       type: "IS_ERROR",
-      payload: error?.response?.data?.message || "Failed to get user cart"
-    })
+      payload: error?.response?.data?.message || "Failed to get user cart",
+    });
   }
-}
+};
 
 export const getUserCartCheck = () => async (dispatch, getState) => {
   try {
     const { data } = await api.get("/carts/user/cart");
-    return Promise.resolve(data)
+    return Promise.resolve(data);
   } catch (error) {
-    console.log(error)
-    return Promise.reject(error)
+    console.log(error);
+    return Promise.reject(error);
   }
-}
+};
 
-export const createStripeClientSecret = (totalPrice) => async (dispatch, getState) => {
-  try {
-    dispatch({
-      type: "IS_FETCHING"
-    })
-    const { data } = await api.post("/order/stripe-client-secret",{
-      amount: Number(totalPrice) * 100,
-      currency: "usd"
-    });
-    dispatch({
-      type: "CLIENT_SECRET_STRIPE",
-      payload: data
-    })
-    localStorage.setItem("client-secret-stripe",JSON.stringify(data))
-    dispatch({
-      type: "IS_SUCCESS"
-    })
-  } catch (error) {
-    console.log(error)
-    dispatch({
-      type: "IS_ERROR",
-      payload: error?.response?.data?.message || "Failed to create client secret"
-    })
-  }
-}
+export const createStripeClientSecret =
+  (totalPrice) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: "IS_FETCHING",
+      });
+      const { data } = await api.post("/order/stripe-client-secret", {
+        amount: Number(totalPrice) * 100,
+        currency: "usd",
+      });
+      dispatch({
+        type: "CLIENT_SECRET_STRIPE",
+        payload: data,
+      });
+      localStorage.setItem("client-secret-stripe", JSON.stringify(data));
+      dispatch({
+        type: "IS_SUCCESS",
+      });
+    } catch (error) {
+      console.log(error);
+      dispatch({
+        type: "IS_ERROR",
+        payload:
+          error?.response?.data?.message || "Failed to create client secret",
+      });
+    }
+  };
 
-export const stripePaymentConfirmation = (sendData,setErrorMessage,setLoading,toast) => 
+export const stripePaymentConfirmation =
+  (sendData, setErrorMessage, setLoading, toast) =>
   async (dispatch, getState) => {
     try {
-      const { data } = await api.post("/order/users/payments/online",sendData);
-      console.log(data)
-      if(data){
+      const { data } = await api.post("/order/users/payments/online", sendData);
+      console.log(data);
+      if (data) {
         localStorage.removeItem("CHECKOUT_ADDRESS");
-        localStorage.removeItem("cartItems")
-        localStorage.removeItem("client-secret-stripe")
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("client-secret-stripe");
         dispatch({
-          type: "CLEAR_CART"
-        })
+          type: "CLEAR_CART",
+        });
         dispatch({
-          type: "REMOVE_CLIENT_SECRET_STRIPE_ADDRESS"
-        })
-        toast.success("Order accepted")
-      }else{
-        setErrorMessage("Payment failed, please try again")
+          type: "REMOVE_CLIENT_SECRET_STRIPE_ADDRESS",
+        });
+        toast.success("Order accepted");
+      } else {
+        setErrorMessage("Payment failed, please try again");
       }
     } catch (error) {
-      console.log(error)
-      setErrorMessage("Payment failed, please try again")
+      console.log(error);
+      setErrorMessage("Payment failed, please try again");
     }
-  }
+  };
 
-export const updateCartWithPriceCartId = (totalPrice,cartId)=>{
+export const updateCartWithPriceCartId = (totalPrice, cartId) => {
   return {
     type: "UPDATE_PRICE_CART_ID",
     payload: {
       totalPrice,
-      cartId
-    }
-  } 
-}
+      cartId,
+    },
+  };
+};
 
+export const vnpayPaymentConfirmation =
+  (orderId, setStatus,setCurrentOrder, amount) => async (dispatch, getState) => {
+    try {
+      const { data } = await api.get(`/order/${orderId}/status`);
+      console.log(data)
+      if(data){
+        localStorage.removeItem("CHECKOUT_ADDRESS");
+        localStorage.removeItem("cartItems");
+        localStorage.removeItem("client-secret-stripe");
+        dispatch({
+          type: "CLEAR_CART",
+        });
+        dispatch({
+          type: "REMOVE_CLIENT_SECRET_STRIPE_ADDRESS",
+        });
+        setCurrentOrder(data)
+        setStatus({
+          success: true,
+          message: `Payment successful! Amount: ${formatPriceVND(amount)}`,
+        });
+      }else{
+        setStatus({
+          success: false,
+          message: "Payment failed. Please try again.",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      setStatus({
+        success: false,
+        message: "Payment failed. Please try again.",
+      });
+    }
+  };

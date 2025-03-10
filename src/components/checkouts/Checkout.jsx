@@ -10,6 +10,7 @@ import PaymentMethod from "./PaymentMethod";
 import OrderSummary from "./OrderSummary";
 import StripePayment from "./StripePayment";
 import PaypalPayment from "./PaypalPayment";
+import api from "../../api/api";
 
 function Checkout() {
   const dispatch = useDispatch();
@@ -27,13 +28,22 @@ function Checkout() {
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
   };
-  const handleNext = () => {
+  const handleNext = async () => {
     if (activeStep === 0 && !selectedUserAddress) {
       toast.error("Please select address before!");
       return;
     }
     if (activeStep === 1 && !paymentMethod) {
       toast.error("Please select payment method before!");
+      return;
+    }
+    if(activeStep === 2 && paymentMethod === "VNPay"){
+      console.log("handle VNPay payment")
+      const { data } = await api.post("/order/users/payments/vn-pay/online",{
+        addressId: selectedUserAddress?.addressId 
+      })
+      console.log(data)
+      window.location.href = data?.vnPayRes?.vnpUrl
       return;
     }
     setActiveStep((prevStep) => prevStep + 1);

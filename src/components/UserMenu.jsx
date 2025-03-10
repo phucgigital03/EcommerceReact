@@ -33,6 +33,10 @@ function UserMenu() {
   return (
     <div className="relative z-40">
       <div
+        id="basic-button"
+        aria-controls={open ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
         className=" sm:text-slate-400 flex flex-row items-center gap-1 rounded-full cursor-pointer hover:shadow-md text-slate-700"
         onClick={handleClick}
       >

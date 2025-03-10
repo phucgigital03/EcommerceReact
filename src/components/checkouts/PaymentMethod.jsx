@@ -101,6 +101,7 @@ function PaymentMethod() {
         >
           <FormControlLabel value="Stripe" control={<Radio />} label="Stripe" />
           <FormControlLabel value="Paypal" control={<Radio />} label="Paypal" />
+          <FormControlLabel value="VNPay" control={<Radio />} label="VNPay" />
         </RadioGroup>
       </FormControl>
     </div>

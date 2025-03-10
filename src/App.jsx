@@ -14,6 +14,7 @@ import PrivateRoutes from './components/PrivateRoutes'
 import Register from './components/auth/Register'
 import Checkout from './components/checkouts/checkout'
 import PaymentConfirmStripe from './components/checkouts/PaymentConfirmStripe'
+import CheckVNPayStatus from './components/checkouts/CheckVNPayStatus'
 
 function App() {
 
@@ -32,7 +33,9 @@ function App() {
           <Route path='/' element={<PrivateRoutes/>}>
             <Route path='/checkout' element={<Checkout/>}/>
             <Route path='/order-confirm' element={<PaymentConfirmStripe/>}/>
+            <Route path='/order/:orderId/status' element={<CheckVNPayStatus/>}/>
           </Route>
+
           <Route path='/' element={<PrivateRoutes publicPage/>}>
             <Route path='/login' element={<LogIn/>}/>
             <Route path='/register' element={<Register/>}/>
