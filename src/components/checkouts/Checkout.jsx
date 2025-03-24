@@ -24,6 +24,14 @@ function Checkout() {
   useEffect(() => {
     dispatch(getUserAddress());
   }, [dispatch]);
+  
+  useEffect(() => {
+    dispatch(getUserAddress());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getUserAddress());
+  }, [dispatch]);
 
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);

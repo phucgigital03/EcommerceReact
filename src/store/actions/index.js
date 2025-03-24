@@ -184,26 +184,35 @@ export const registerNewUser =
     }
   };
 
+export const handleLogOut = async ()=>{
+  const { data } = await api.post("/auth/signout");
+  return data
+}
+
 export const logOutUser = (navigate, toast) => async (dispatch) => {
   try {
     // setLoader(true)
-    const { data } = await api.post("/auth/signout");
+    const data = await handleLogOut(dispatch);
+    localStorage.removeItem("auth");
     dispatch({
       type: "LOGOUT_USER",
     });
     dispatch({
       type: "CLEAR_CART_LOGOUT",
     });
-    localStorage.removeItem("auth");
-    toast.success(`${data?.message || "Sign out successfully"}`);
     navigate("/login");
   } catch (error) {
-    console.log(error);
-    toast.error(
-      error?.response?.data?.message ||
-        error?.response?.data?.password ||
-        "Internal server error"
-    );
+    console.log("logOut error:",error);
+    if(error?.response?.status === 400){
+      localStorage.removeItem("auth");
+      dispatch({
+        type: "LOGOUT_USER",
+      });
+      dispatch({
+        type: "CLEAR_CART_LOGOUT",
+      });
+      navigate("/login");
+    }
   }
 };
 
@@ -242,6 +251,9 @@ export const getUserAddress = () => async (dispatch) => {
   try {
     dispatch({ type: "IS_FETCHING" });
     const { data } = await api.get("/user/addresses");
+    // test multiple requests when one done (the one above)
+    await api.get("/user/addresses");
+    await api.get("/user/addresses");
     dispatch({
       type: "USER_ADDRESSES",
       payload: data,
