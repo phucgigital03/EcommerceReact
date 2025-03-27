@@ -200,7 +200,9 @@ export const logOutUser = (navigate, toast) => async (dispatch) => {
     dispatch({
       type: "CLEAR_CART_LOGOUT",
     });
-    navigate("/login");
+    console.log("logout done...")
+    // navigate("/login");
+    window.location.href = "/login"
   } catch (error) {
     console.log("logOut error:",error);
     if(error?.response?.status === 400){
