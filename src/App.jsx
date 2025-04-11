@@ -5,7 +5,7 @@ import Products from "./components/products/Products";
 import Home from "./components/homes/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./components/shared/NavBar";
-import About from "./components/About";
+import About from "./components/about/About";
 import Contact from "./components/Contact";
 import { Toaster } from "react-hot-toast";
 import Cart from "./components/cart/Cart";
@@ -33,7 +33,8 @@ import OrderManagement from "./components/dashboard/contents/OrderManagement";
 import AddressManagement from "./components/dashboard/contents/AddressManagement";
 import CategoryManagement from "./components/dashboard/contents/CategoryManagement";
 import InventoryManagement from "./components/dashboard/contents/InventoryManagement";
-import { useSelector } from "react-redux";
+import Profile from "./components/profile/Profile";
+import OAuth2RedirectHandler from "./components/auth/OAuth2RedirectHandler";
 
 // /dashboard
 // /dashboard/usermanagement
@@ -116,6 +117,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
 
           {/* Public Route have condition: if user have authentication,
             then redirect Home('/'). Otherwise,redirect (/login or /register) */}
@@ -126,6 +128,7 @@ function App() {
 
           {/* Private Route just authenticate */}
           <Route path="/" element={<PrivateRoutes />}>
+            <Route path="/profile" element={<Profile />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-confirm" element={<PaymentConfirmStripe />} />
             <Route

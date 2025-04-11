@@ -25,10 +25,11 @@ function Checkout() {
     dispatch(getUserAddress());
   }, [dispatch]);
   
+  // test refresh token (call at the same time while accessToken expired)
   useEffect(() => {
     dispatch(getUserAddress());
   }, [dispatch]);
-
+  // test refresh token (call at the same time while accessToken expired)
   useEffect(() => {
     dispatch(getUserAddress());
   }, [dispatch]);

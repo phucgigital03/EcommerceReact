@@ -1,7 +1,6 @@
 import { IoMdLogIn } from "react-icons/io";
 import { useForm } from "react-hook-form";
 import InputField from "../../../shared/InputField";
-import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import CheckBoxField from "../../../shared/CheckBoxField";
 import api from "../../../../api/api";
 import toast from "react-hot-toast";

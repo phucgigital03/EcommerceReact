@@ -192,7 +192,7 @@ export const handleLogOut = async ()=>{
 export const logOutUser = (navigate, toast) => async (dispatch) => {
   try {
     // setLoader(true)
-    const data = await handleLogOut(dispatch);
+    const data = await handleLogOut();
     localStorage.removeItem("auth");
     dispatch({
       type: "LOGOUT_USER",
@@ -255,7 +255,7 @@ export const getUserAddress = () => async (dispatch) => {
     const { data } = await api.get("/user/addresses");
     // test multiple requests when one done (the one above)
     await api.get("/user/addresses");
-    await api.get("/user/addresses");
+    // await api.get("/user/addresses");
     dispatch({
       type: "USER_ADDRESSES",
       payload: data,

@@ -7,7 +7,10 @@ import { useDispatch } from "react-redux";
 import { authenticateSignInUser } from "../../store/actions";
 import toast from "react-hot-toast";
 import Spinner from "../shared/Spinner";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 function LogIn() {
     const navigate = useNavigate();
@@ -69,15 +72,42 @@ function LogIn() {
                     loader ? <div className="flex flex-row items-center"><Spinner/> <span>Loading...</span></div> : <>Login</>
                 }
             </button>
-            <div className="flex items-center">
-                <span>Do not have an account, please register here.
+            <div className="flex items-center justify-start">
+                <p>
+                    <span className="block w-100%">Do not have an account, please register here.</span>
                     <Link
-                        className="ml-2 underline text-blue-600 hover:text-blue-400"
+                        className="underline text-blue-600 hover:text-blue-400"
                         to={"/register"}
                     >
                         Register
                     </Link>
-                </span>
+                </p>
+            </div>
+            <div className="login-with-Oauth2">
+            <div className="flex items-center justify-between gap-1 py-5 ">
+                <Link
+                  to={`${apiUrl}/oauth2/authorization/google`}
+                  className="flex gap-1 items-center justify-center flex-1 border p-2 shadow-sm shadow-slate-200 rounded-md hover:bg-slate-300 transition-all duration-300"
+                >
+                  <span>
+                    <FcGoogle className="text-2xl" />
+                  </span>
+                  <span className="font-semibold sm:text-customText text-xs">
+                    Login with Google
+                  </span>
+                </Link>
+                <Link
+                  to={`${apiUrl}/oauth2/authorization/github`}
+                  className="flex gap-1 items-center justify-center flex-1 border p-2 shadow-sm shadow-slate-200 rounded-md hover:bg-slate-300 transition-all duration-300"
+                >
+                  <span>
+                    <FaGithub className="text-2xl" />
+                  </span>
+                  <span className="font-semibold sm:text-customText text-xs">
+                    Login with Github
+                  </span>
+                </Link>
+              </div>
             </div>
         </form>
     </div>
