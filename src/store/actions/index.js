@@ -1,5 +1,6 @@
 import api from "../../api/api";
 import { formatPriceVND } from "../../utils/formatPrice";
+import { jwtDecode } from "jwt-decode";
 
 export const fetchProducts = (queryString) => async (dispatch) => {
   try {
@@ -141,25 +142,82 @@ export const removeFromCart = (data, toast) => (dispatch, getState) => {
   localStorage.setItem("cartItems", JSON.stringify(getState().carts.cart));
 };
 
+const handleSuccessfulLogin = (
+  dispatch,
+  dataAuth,
+  getState,
+  reset,
+  toast,
+  navigate
+) => {
+  dispatch({
+    type: "LOGIN_USER",
+    payload: dataAuth,
+  });
+  localStorage.setItem("auth", JSON.stringify(getState().auth?.user));
+  reset();
+  toast.success("Login successfully");
+  navigate("/");
+};
+
 export const authenticateSignInUser =
-  (sendData, toast, reset, navigate, setLoader) =>
+  (sendData, toast, reset, navigate, setLoader, setStep, setJwtToken) =>
   async (dispatch, getState) => {
     try {
       setLoader(true);
-      const { data } = await api.post("/auth/signin", sendData);
-      dispatch({
-        type: "LOGIN_USER",
-        payload: data,
-      });
-      localStorage.setItem("auth", JSON.stringify(getState().auth?.user));
-      reset();
-      toast.success("Login successfully");
-      navigate("/");
+      const { data: dataAuth, status } = await api.post("/auth/signin", sendData);
+
+      // check 2FA
+      if (status === 200 && dataAuth.jwtToken) {
+        const decodedToken = jwtDecode(dataAuth?.jwtToken);
+        setJwtToken(dataAuth.jwtToken);
+        if (decodedToken?.is2faEnabled) {
+          setStep(2);
+        } else {
+          handleSuccessfulLogin(
+            dispatch,
+            dataAuth,
+            getState,
+            reset,
+            toast,
+            navigate
+          );
+        }
+      } else {
+        toast.error(
+          "Login failed. Please check your credentials and try again."
+        );
+      }
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.message || "Internal server error");
     } finally {
       setLoader(false);
+    }
+  };
+
+export const verify2FALogin =
+  (toast, reset, navigate, setLoading, data, jwtToken) =>
+  async (dispatch, getState) => {
+    try {
+      const code = data.code;
+      setLoading(true);
+      const formData = new URLSearchParams();
+      formData.append("code", code);
+      formData.append("jwtToken", jwtToken);
+
+      const { data: dataAuth }  = await api.post("/auth/public/verify-2fa-login", formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
+      // console.log(dataAuth)
+      handleSuccessfulLogin(dispatch, dataAuth, getState, reset, toast, navigate);
+    } catch (error) {
+      console.error("2FA verification error", error);
+      toast.error("Invalid 2FA code. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -184,10 +242,10 @@ export const registerNewUser =
     }
   };
 
-export const handleLogOut = async ()=>{
+export const handleLogOut = async () => {
   const { data } = await api.post("/auth/signout");
-  return data
-}
+  return data;
+};
 
 export const logOutUser = (navigate, toast) => async (dispatch) => {
   try {
@@ -200,12 +258,12 @@ export const logOutUser = (navigate, toast) => async (dispatch) => {
     dispatch({
       type: "CLEAR_CART_LOGOUT",
     });
-    console.log("logout done...")
+    console.log("logout done...");
     // navigate("/login");
-    window.location.href = "/login"
+    window.location.href = "/login";
   } catch (error) {
-    console.log("logOut error:",error);
-    if(error?.response?.status === 400){
+    console.log("logOut error:", error);
+    if (error?.response?.status === 400) {
       localStorage.removeItem("auth");
       dispatch({
         type: "LOGOUT_USER",
@@ -425,11 +483,12 @@ export const updateCartWithPriceCartId = (totalPrice, cartId) => {
 };
 
 export const vnpayPaymentConfirmation =
-  (orderId, setStatus,setCurrentOrder, amount) => async (dispatch, getState) => {
+  (orderId, setStatus, setCurrentOrder, amount) =>
+  async (dispatch, getState) => {
     try {
       const { data } = await api.get(`/order/${orderId}/status`);
-      console.log(data)
-      if(data){
+      console.log(data);
+      if (data) {
         localStorage.removeItem("CHECKOUT_ADDRESS");
         localStorage.removeItem("cartItems");
         localStorage.removeItem("client-secret-stripe");
@@ -439,12 +498,12 @@ export const vnpayPaymentConfirmation =
         dispatch({
           type: "REMOVE_CLIENT_SECRET_STRIPE_ADDRESS",
         });
-        setCurrentOrder(data)
+        setCurrentOrder(data);
         setStatus({
           success: true,
           message: `Payment successful! Amount: ${formatPriceVND(amount)}`,
         });
-      }else{
+      } else {
         setStatus({
           success: false,
           message: "Payment failed. Please try again.",

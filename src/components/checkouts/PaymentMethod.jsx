@@ -50,6 +50,7 @@ function PaymentMethod() {
         dispatch(createUserCart(cartItems));
         return;
       }
+      // because not saving totalPrice,cartId at localStorage
       if(differences.length === 0){
         if(!totalPrice || !cartId){
           console.log("updateCartWithPriceCartId")
@@ -60,7 +61,9 @@ function PaymentMethod() {
 
     } catch (error) {
       console.log(error);
-      if (cartId === null && error?.response?.status === 404) {
+      console.log("handle create cart when cart not found", cartId);
+      if ((!cartId || cartId === null) && error?.response?.status === 404) {
+        console.log("handle create cart when cart not found");
         dispatch(createUserCart(cartItems));
       }
     }

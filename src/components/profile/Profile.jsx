@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-// import api from "../../services/api";
-// import { useMyContext } from "../../store/ContextApi";
-// import InputField from "../InputField/InputField";
-// import { useForm } from "react-hook-form";
-// import Buttons from "../../utils/Buttons";
-// import Switch from "@mui/material/Switch";
 import toast from "react-hot-toast";
-// import { jwtDecode } from "jwt-decode";
 import { MdArrowDropDown } from "react-icons/md";
 import {
   Accordion,
@@ -16,31 +9,12 @@ import {
   Button,
 } from "@mui/material";
 import Loader from "../shared/Loader";
-// import moment from "moment";
-// import Errors from "../Errors";
-
-const currentUser = {
-  id: 3,
-  jwtToken:
-    "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0MzEzODk3OSwiZXhwIjoxNzQzMTM5MDA5LCJub25jZSI6IjA2YjNiNDYzLTQ5YTgtNDMwMS1iYzZhLTljNzIyZmJiODM5MiJ9.PoV2k_sO6pwt8lQgvP8QPcPCQTcfANoTrwyfzVm9am4",
-  username: "admin",
-  roles: ["ROLE_SELLER", "ROLE_ADMIN", "ROLE_USER"],
-};
+import api from "../../api/api";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
-  // Access the currentUser and token hook using the useMyContext custom hook from the ContextProvider
-  //   const { currentUser, token } = useMyContext();
-  //set the loggin session from the token
-  //   const [loginSession, setLoginSession] = useState(null);
-
-  //   const [credentialExpireDate, setCredentialExpireDate] = useState(null);
+  const { user: currentUser } = useSelector(state => state.auth)
   const [pageError, setPageError] = useState(false);
-
-  //   const [accountExpired, setAccountExpired] = useState();
-  //   const [accountLocked, setAccountLock] = useState();
-  //   const [accountEnabled, setAccountEnabled] = useState();
-  //   const [credentialExpired, setCredentialExpired] = useState();
-
 
   const [is2faEnabled, setIs2faEnabled] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
@@ -52,28 +26,14 @@ const Profile = () => {
   const [disabledLoader, setDisbledLoader] = useState(false);
   const [twofaCodeLoader, settwofaCodeLoader] = useState(false);
 
-//   const {
-//     register,
-//     handleSubmit,
-//     setValue,
-
-//     formState: { errors },
-//   } = useForm({
-//     defaultValues: {
-//       //   username: currentUser?.username,
-//       //   email: currentUser?.email,
-//       password: "",
-//     },
-//     mode: "onTouched",
-//   });
-
   //fetching the 2fa sttaus
   useEffect(() => {
-    // setPageLoader(true);
+    setPageLoader(true);
 
     const fetch2FAStatus = async () => {
       try {
         const response = await api.post(`/auth/user/2fa-status`);
+        console.log(response)
         setIs2faEnabled(response.data.is2faEnabled);
       } catch (error) {
         setPageError(error?.response?.data?.message);
@@ -82,15 +42,15 @@ const Profile = () => {
         setPageLoader(false);
       }
     };
-    // fetch2FAStatus();
+    fetch2FAStatus();
   }, []);
 
   //enable the 2fa
   const enable2FA = async () => {
     setDisbledLoader(true);
     try {
-      //   const response = await api.post(`/auth/enable-2fa`);
-      //   setQrCodeUrl(response.data);
+        const response = await api.post(`/auth/enable-2fa`);
+        setQrCodeUrl(response.data);
       setStep(2);
     } catch (error) {
       toast.error("Error enabling 2FA");
@@ -138,24 +98,9 @@ const Profile = () => {
       toast.error("Invalid 2FA Code");
     } finally {
       settwofaCodeLoader(false);
+      setCode("");
     }
   };
-
-  //set the status of (credentialsNonExpired, accountNonLocked, enabled and credentialsNonExpired) current user
-  useEffect(() => {
-    if (currentUser?.id) {
-      //   setAccountExpired(!currentUser.accountNonExpired);
-      //   setAccountLock(!currentUser.accountNonLocked);
-      //   setAccountEnabled(currentUser.enabled);
-      //   setCredentialExpired(!currentUser.credentialsNonExpired);
-
-      //moment npm package is used to format the date
-      //   const expiredFormatDate = moment(
-      //     currentUser?.credentialsExpiryDate
-      //   ).format("D MMMM YYYY");
-      //   setCredentialExpireDate(expiredFormatDate);
-    }
-  }, [currentUser]);
 
   if (pageError) {
     // return <Errors message={pageError} />;
@@ -200,7 +145,7 @@ const Profile = () => {
                     </span>
                   </h1>
                   <h1 className="font-semibold text-md text-slate-800">
-                    2FA Authentication : {" "}
+                    2FA Authentication :{" "}
                     <span
                       className={` ${
                         is2faEnabled ? "bg-green-800" : "bg-red-600"
@@ -212,15 +157,13 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-            <div className="flex-1 flex flex-col shadow-lg shadow-gray-300 gap-2 px-4 py-6">
+            <div className="flex flex-col shadow-lg shadow-gray-300 gap-2 px-4 py-6">
               <div>
-                <Button
-                  //   disabled={disabledLoader}
-                  variant="contained"
+                <button
                   disabled={disabledLoader}
                   onClick={is2faEnabled ? disable2FA : enable2FA}
                   className={` ${
-                    is2faEnabled ? "bg-blue-600" : "bg-red-600"
+                    is2faEnabled ? "bg-red-600" : "bg-blue-600"
                   } px-5 py-1 hover:text-slate-300 rounded-sm text-white mt-2`}
                 >
                   {disabledLoader ? (
@@ -232,7 +175,7 @@ const Profile = () => {
                         : "Enable Two Factor Authentication"}
                     </>
                   )}
-                </Button>
+                </button>
               </div>
               {step === 2 && (
                 <div className="py-3">
@@ -248,7 +191,7 @@ const Profile = () => {
                     </AccordionSummary>
                     <AccordionDetails>
                       <div className="">
-                        <img src={qrCodeUrl} alt="QR Code" />
+                        <img src={qrCodeUrl ? qrCodeUrl : "/qr"} alt="QR Code" />
                         <div className="flex items-center  gap-2  mt-4">
                           <input
                             type="text"
