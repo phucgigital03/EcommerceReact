@@ -115,7 +115,7 @@ export default function DashboardManage() {
   const location = useLocation();
 
   console.log("Dashboard Management: ", user);
-  console.log("Dashboard Management: ",hasPermission(permissions.VIEW_ADMIN_TOOLS));
+  console.log("Dashboard Management: ", hasPermission(permissions.VIEW_ADMIN_TOOLS));
 
   // const handleSelectAllClick = (event) => {
   //   if (event.target.checked) {

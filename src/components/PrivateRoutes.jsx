@@ -18,7 +18,7 @@ function PrivateRoutes({ publicPage = false }) {
 
   if (publicPage) {
     const userRoles = user?.roles;
-    console.log("PrivateRoutes: ", userRoles)
+    console.log("PrivateRoutes publicPage is TRUE: ", userRoles)
     if(userRoles){
       if(checkDashboardRedirection(userRoles)){
         return <Navigate to={"/dashboard"} replace={true}/>

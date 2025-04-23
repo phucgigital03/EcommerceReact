@@ -1,3 +1,4 @@
+import { replace } from "react-router-dom";
 import api from "../../api/api";
 import { formatPriceVND } from "../../utils/formatPrice";
 import { jwtDecode } from "jwt-decode";
@@ -157,7 +158,9 @@ const handleSuccessfulLogin = (
   localStorage.setItem("auth", JSON.stringify(getState().auth?.user));
   reset();
   toast.success("Login successfully");
-  navigate("/");
+  console.log("before redirect to /");
+  navigate("/", { replace: true });
+  console.log("after redirect to /");
 };
 
 export const authenticateSignInUser =
@@ -251,16 +254,18 @@ export const logOutUser = (navigate, toast) => async (dispatch) => {
   try {
     // setLoader(true)
     const data = await handleLogOut();
-    localStorage.removeItem("auth");
     dispatch({
       type: "LOGOUT_USER",
     });
     dispatch({
       type: "CLEAR_CART_LOGOUT",
     });
+    localStorage.removeItem("auth");
     console.log("logout done...");
-    // navigate("/login");
-    window.location.href = "/login";
+    console.log("before redirect to /login");
+    navigate("/login", { replace: true });
+    console.log("after redirect to /login");
+    // window.location.href = "/login";
   } catch (error) {
     console.log("logOut error:", error);
     if (error?.response?.status === 400) {

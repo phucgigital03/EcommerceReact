@@ -5,15 +5,16 @@ import { IoIosMenu } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import UserMenu from "../UserMenu"
-
+import UserMenu from "../UserMenu";
+import { permissions } from "../../config/rbacConfig";
+import { usePermission } from "../../hooks/usePermission";
 
 function NavBar() {
   const path = useLocation().pathname;
   const [navbarOpen, setNavbarOpen] = useState(false);
-  const { cart } = useSelector(state => state.carts)
-  const { user } = useSelector(state => state.auth)
-
+  const { cart } = useSelector((state) => state.carts);
+  const { user } = useSelector((state) => state.auth);
+  const { hasPermission } = usePermission(user?.roles);
 
   return (
     <div className="h-[70px] bg-custom-gradient text-white z-50 sticky top-0 flex items-center">
@@ -27,7 +28,7 @@ function NavBar() {
           className={`flex flex-col gap-4 absolute left-0 top-[70px] shadow-md transition-all duration-150 bg-custom-gradient text-white w-full px-4
                     sm:flex-row sm:items-center sm:gap-10 sm:static sm:shadow-none sm:h-[40px] sm:bg-none sm:w-fit sm:px-0 
                     ${
-                        navbarOpen ? "h-fit sm:pb-0 pb-5" : "h-0 overflow-hidden"
+                      navbarOpen ? "h-fit sm:pb-0 pb-5" : "h-0 overflow-hidden"
                     }`}
         >
           <li className="font-[500] transition-all duration-200">
@@ -76,6 +77,20 @@ function NavBar() {
               Contact
             </Link>
           </li>
+          {hasPermission(permissions.VIEW_DASHBOARD) && (
+            <li className="font-[500] transition-all duration-200">
+              <Link
+                className={` ${
+                  path === "/dashboard"
+                    ? "text-white font-semibold"
+                    : "text-slate-400"
+                }`}
+                to={"/dashboard"}
+              >
+                Dashboard
+              </Link>
+            </li>
+          )}
           <li className="font-[500] transition-all duration-200">
             <Link
               className={` ${
@@ -97,29 +112,28 @@ function NavBar() {
               </Badge>
             </Link>
           </li>
-          {(user && user.id) ? (
+          {user && user.id ? (
             <li className="font-[500] transition-all duration-200">
               {/* usermenu */}
-              <UserMenu/>
+              <UserMenu />
             </li>
           ) : (
             <li className="font-[500] transition-all duration-200">
-            <Link
-              className={` 
+              <Link
+                className={` 
                             flex items-center space-x-1 px-4
                             ${
                               path === "/login"
                                 ? "text-white font-semibold"
                                 : "text-slate-400"
                             }`}
-              to={"/login"}
-            >
-              <FaSignInAlt />
-              <span>Login</span>
-            </Link>
-          </li>
+                to={"/login"}
+              >
+                <FaSignInAlt />
+                <span>Login</span>
+              </Link>
+            </li>
           )}
-          
         </ul>
 
         <button

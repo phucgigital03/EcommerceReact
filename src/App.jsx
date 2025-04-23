@@ -21,11 +21,7 @@ import DashboardManage from "./components/dashboard/DashboardManage";
 import Support from "./components/dashboard/Support";
 import RbacRoute from "./components/RbacRoute";
 import { permissions } from "./config/rbacConfig";
-import {
-  RiDashboardLine,
-  RiUserLine,
-  RiTruckLine,
-} from "react-icons/ri";
+import { RiDashboardLine, RiUserLine, RiTruckLine } from "react-icons/ri";
 import { BiDollar, BiStore } from "react-icons/bi";
 import { MdInventory, MdPointOfSale } from "react-icons/md";
 import UserManagement from "./components/dashboard/contents/UserManagement";
@@ -48,25 +44,25 @@ export const sidebarItems = [
     text: "Dashboard",
     icon: <RiDashboardLine />,
     link: "/dashboard",
-    component: <DashboardManage/>,
+    component: <DashboardManage />,
     permission: permissions.VIEW_ADMIN_TOOLS,
-    content: <div>Some charts</div>
+    content: <div>Some charts</div>,
   },
   {
     text: "User Management",
     icon: <RiUserLine />,
     link: "/dashboard/usermanagement",
-    component: <DashboardManage/>,
+    component: <DashboardManage />,
     permission: permissions.VIEW_USER,
-    content: <UserManagement/>
+    content: <UserManagement />,
   },
   {
     text: "Order Management",
     icon: <BiStore />,
     link: "/dashboard/ordermanagement",
-    component: <DashboardManage/>,
+    component: <DashboardManage />,
     permission: permissions.VIEW_ORDER,
-    content: <OrderManagement/>
+    content: <OrderManagement />,
   },
   {
     text: "Category Management",
@@ -74,7 +70,7 @@ export const sidebarItems = [
     link: "/dashboard/categorymanagement",
     component: <DashboardManage />,
     permission: permissions.VIEW_CATEGORY,
-    content: <CategoryManagement/>
+    content: <CategoryManagement />,
   },
   {
     text: "Address Management",
@@ -82,7 +78,7 @@ export const sidebarItems = [
     link: "/dashboard/addressmanagement",
     component: <DashboardManage />,
     permission: permissions.VIEW_ADDRESS,
-    content: <AddressManagement/>
+    content: <AddressManagement />,
   },
   {
     text: "Inventory Management",
@@ -90,14 +86,14 @@ export const sidebarItems = [
     link: "/dashboard/inventorymanagement",
     component: <DashboardManage />,
     permission: permissions.VIEW_INVENTORY,
-    content: <InventoryManagement/>
+    content: <InventoryManagement />,
   },
   {
     text: "Support",
     icon: <MdPointOfSale />,
     link: "/dashboard/support",
     component: <Support />,
-    permission: permissions.VIEW_SUPPORT
+    permission: permissions.VIEW_SUPPORT,
   },
 ];
 
@@ -121,13 +117,14 @@ function App() {
 
           {/* Public Route have condition: if user have authentication,
             then redirect Home('/'). Otherwise,redirect (/login or /register) */}
-          <Route path="/" element={<PrivateRoutes publicPage />}>
+          <Route element={<PrivateRoutes publicPage />}>
             <Route path="/login" element={<LogIn />} />
             <Route path="/register" element={<Register />} />
           </Route>
 
           {/* Private Route just authenticate */}
-          <Route path="/" element={<PrivateRoutes />}>
+          <Route element={<PrivateRoutes />}>
+
             <Route path="/profile" element={<Profile />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-confirm" element={<PaymentConfirmStripe />} />
@@ -135,33 +132,32 @@ function App() {
               path="/order/:orderId/status"
               element={<CheckVNPayStatus />}
             />
-          </Route>
 
-          {/* Private Route have authenticate and authorizate */}
-          <Route
-            path="/"
-            element={
-              <RbacRoute requiredPermission={permissions.VIEW_DASHBOARD} />
-            }
-          >
-            {sidebarItems.map((sidebar) => {
-              return (
-                <Route
-                  key={sidebar.text}
-                  path={sidebar.link}
-                  element={sidebar.component}
-                />
-              );
-            })}
-          </Route>
+            {/* Private Route have authenticate and authorizate */}
+            <Route
+              element={
+                <RbacRoute requiredPermission={permissions.VIEW_DASHBOARD} />
+              }
+            >
+              {sidebarItems.map((sidebar) => {
+                return (
+                  <Route
+                    key={sidebar.text}
+                    path={sidebar.link}
+                    element={sidebar.component}
+                  />
+                );
+              })}
+            </Route>
 
-          <Route
-            path="/"
-            element={
-              <RbacRoute requiredPermission={permissions.VIEW_SUPPORT} />
-            }
-          >
-            <Route path='/support' element={<Support/>} />
+            <Route
+              element={
+                <RbacRoute requiredPermission={permissions.VIEW_SUPPORT} />
+              }
+            >
+              <Route path="/support" element={<Support />} />
+            </Route>
+
           </Route>
 
           {/* other routers */}

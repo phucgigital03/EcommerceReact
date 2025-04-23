@@ -12,6 +12,7 @@ function RbacRoute({ requiredPermission, redirectTo = "/access-denied" }) {
   const { hasPermission } = usePermission(userRoles);
 
   if (!hasPermission(requiredPermission)) {
+    console.log("/access-denied")
     return <Navigate to={redirectTo} replace={true} />;
   }
   return <Outlet />;

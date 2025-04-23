@@ -10,11 +10,15 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logOutUser } from "../store/actions";
 import toast from "react-hot-toast";
+import { MdDashboard } from "react-icons/md";
+import { usePermission } from "../hooks/usePermission";
+import { permissions } from "../config/rbacConfig";
 
 function UserMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const { user } = useSelector((state) => state.auth);
+  const { hasPermission } = usePermission(user?.roles);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -26,17 +30,17 @@ function UserMenu() {
     setAnchorEl(null);
   };
 
-  const logOutHandler = ()=>{
-    dispatch(logOutUser(navigate,toast))
-  }
+  const logOutHandler = () => {
+    dispatch(logOutUser(navigate, toast));
+  };
 
   return (
     <div className="relative z-40">
       <div
         id="basic-button"
-        aria-controls={open ? 'basic-menu' : undefined}
+        aria-controls={open ? "basic-menu" : undefined}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
+        aria-expanded={open ? "true" : undefined}
         className=" sm:text-slate-400 flex flex-row items-center gap-1 rounded-full cursor-pointer hover:shadow-md text-slate-700"
         onClick={handleClick}
       >
@@ -59,6 +63,14 @@ function UserMenu() {
             <span className="font-bold text-[16px] mt-1">{user?.username}</span>
           </MenuItem>
         </Link>
+        {hasPermission(permissions.VIEW_DASHBOARD) && (
+          <Link to={"/dashboard"}>
+            <MenuItem onClick={handleClose} className="flex gap-2">
+              <MdDashboard className="text-xl" />
+              <span className="font-bold text-[16px] mt-1">Dashboard</span>
+            </MenuItem>
+          </Link>
+        )}
         <Link to={"/profile/orders"}>
           <MenuItem onClick={handleClose} className="flex gap-2">
             <FaShoppingCart className="text-xl" />
@@ -73,7 +85,7 @@ function UserMenu() {
         </MenuItem>
       </Menu>
 
-      {open && <BackDrop/>}
+      {open && <BackDrop />}
     </div>
   );
 }
