@@ -52,7 +52,7 @@ function AddressInfo({ addresses }) {
       ) : (
         <div className="relative mx-auto max-w-md p-6 rounded-lg">
           <h1 className="font-bold text-2xl text-slate-800 text-center">
-            Select Address
+            Select Shipping Address
           </h1>
 
           {isLoading ? (

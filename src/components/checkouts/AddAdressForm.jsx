@@ -53,11 +53,11 @@ function AddAdressForm({ address, setOpenAddressModal }) {
       >
         <div className="flex items-center justify-center mb-4">
           <IoMdLogIn size={50} />
-          <h1 className="text-slate-600 font-bold font-montserrat text-center sm:text-3xl text-xl">
+          <h3 className="text-slate-600 font-bold font-montserrat text-center sm:text-xl text-xl">
             {
-                !address?.addressId ? "Add address" : "Update address"
+                !address?.addressId ? "Add shipping address" : "Update shipping address"
             }
-          </h1>
+          </h3>
         </div>
         <hr className="mt-4 h-2" />
         <div className="flex flex-col gap-4">

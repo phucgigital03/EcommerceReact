@@ -31,6 +31,7 @@ import CategoryManagement from "./components/dashboard/contents/CategoryManageme
 import InventoryManagement from "./components/dashboard/contents/InventoryManagement";
 import Profile from "./components/profile/Profile";
 import OAuth2RedirectHandler from "./components/auth/OAuth2RedirectHandler";
+import Orders from "./components/order/Orders";
 
 // /dashboard
 // /dashboard/usermanagement
@@ -117,15 +118,16 @@ function App() {
 
           {/* Public Route have condition: if user have authentication,
             then redirect Home('/'). Otherwise,redirect (/login or /register) */}
-          <Route element={<PrivateRoutes publicPage />}>
+          <Route path="/" element={<PrivateRoutes publicPage />}>
             <Route path="/login" element={<LogIn />} />
             <Route path="/register" element={<Register />} />
           </Route>
 
           {/* Private Route just authenticate */}
-          <Route element={<PrivateRoutes />}>
+          <Route path="/" element={<PrivateRoutes />}>
 
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/orders" element={<Orders />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-confirm" element={<PaymentConfirmStripe />} />
             <Route
