@@ -15,7 +15,7 @@ const OrderDetail = styled(Box)(({ theme }) => ({
 
 function FilterOrder({ orderType, orders = [] }) {
   console.log(orderType, orders);
-  
+
   const filterOrder = orders.filter((order) => {
     switch (orderType) {
       case "Pending":
@@ -73,61 +73,72 @@ function FilterOrder({ orderType, orders = [] }) {
 
             <Divider sx={{ my: 2 }} />
 
-            <Typography variant="body1" gutterBottom>
-              Receive Address:
-            </Typography>
+            {/* User show detail immedially */}
+            <Box>
+              <Typography variant="body1" gutterBottom>
+                Receive Address:
+              </Typography>
 
-            <Box sx={{ ml: 2, mb: 2 }}>
-              <Typography variant="body1" color="text.secondary">
-                Street: {order.address.street}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Building: {order.address.buildingName}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                City: {order.address.city}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                State: {order.address.state}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Country: {order.address.country}
-              </Typography>
+              <Box sx={{ ml: 2, mb: 2 }}>
+                <Typography variant="body1" color="text.secondary">
+                  Street: {order.address.street}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Building: {order.address.buildingName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  City: {order.address.city}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  State: {order.address.state}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Country: {order.address.country}
+                </Typography>
+              </Box>
+
+              <Grid container spacing={2}>
+                {order.orderItems.map((product, index) => (
+                  <Grid item xs={12} key={index}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        border: "1px solid #e0e0e0",
+                        borderRadius: 1,
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={product.image}
+                        alt={product.productName}
+                        sx={{
+                          width: 100,
+                          height: 100,
+                          objectFit: "contain",
+                          backgroundColor: "#f5f5f5",
+                        }}
+                      />
+                      <Box sx={{ flex: 1, p: 2 }}>
+                        <Typography variant="h6" component="div">
+                          {product.productName}
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary">
+                          {product.quantity} x ${product.orderedProductPrice}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
             </Box>
 
-            <Grid container spacing={2}>
-              {order.orderItems.map((product, index) => (
-                <Grid item xs={12} key={index}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      border: "1px solid #e0e0e0",
-                      borderRadius: 1,
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      src={product.image}
-                      alt={product.productName}
-                      sx={{
-                        width: 100,
-                        height: 100,
-                        objectFit: "contain",
-                        backgroundColor: "#f5f5f5",
-                      }}
-                    />
-                    <Box sx={{ flex: 1, p: 2 }}>
-                      <Typography variant="h6" component="div">
-                        {product.productName}
-                      </Typography>
-                      <Typography variant="body1" color="text.secondary">
-                        {product.quantity} x ${product.orderedProductPrice}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
+            {/* 
+              User show generall .Having View, Check actions
+              View: show detail
+              Check: can print Order
+            */}
+
+            
           </OrderCard>
         ))
       ) : (

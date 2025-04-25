@@ -20,7 +20,7 @@ function AddUserForm({ user, roleDBs ,setOpenUserModal, setUsers }) {
   } = useForm({
     mode: "onTouched",
     defaultValues: {
-        role: [], // Store selected checkboxes
+      role: [], // Store selected checkboxes
     },
   });
 

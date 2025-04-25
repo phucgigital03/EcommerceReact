@@ -48,6 +48,7 @@ import { useSelector } from "react-redux";
 import { permissions } from "../../config/rbacConfig";
 import { Link, useLocation } from "react-router-dom";
 import { sidebarItems } from "../../App";
+import { IoExitOutline } from "react-icons/io5";
 
 // const productData = [
 //   {
@@ -115,7 +116,10 @@ export default function DashboardManage() {
   const location = useLocation();
 
   console.log("Dashboard Management: ", user);
-  console.log("Dashboard Management: ", hasPermission(permissions.VIEW_ADMIN_TOOLS));
+  console.log(
+    "Dashboard Management: ",
+    hasPermission(permissions.VIEW_ADMIN_TOOLS)
+  );
 
   // const handleSelectAllClick = (event) => {
   //   if (event.target.checked) {
@@ -167,7 +171,6 @@ export default function DashboardManage() {
     }
   }, [location.pathname]);
 
-
   return (
     <Box
       sx={{
@@ -211,18 +214,19 @@ export default function DashboardManage() {
                   </ListItem>
                 </React.Fragment>
               ))}
+
+              <ListItem key={"buttonLogOut"} sx={{ padding: "0px", marginTop: "10px" }}>
+                <div 
+                  className="font-semibold w-full 
+                  flex gap-2 items-center bg-button-gradient 
+                  px-[12px] py-[10px] text-white  
+                  rounded-sm cursor-pointer"
+                >
+                  <IoExitOutline className="text-xl" />
+                  <span className="font-bold text-[16px]">LogOut</span>
+                </div>
+              </ListItem>
             </List>
-            <Box sx={{ position: "absolute", bottom: "80px", left: "40px" }}>
-              <Button
-                startIcon={<FiLogOut />}
-                variant="outlined"
-                color="error"
-                fullWidth
-                sx={{ justifyContent: "flex-start", pl: 2 }}
-              >
-                Logout
-              </Button>
-            </Box>
           </Box>
 
           {/* Main Content */}
@@ -236,11 +240,11 @@ export default function DashboardManage() {
                   return (
                     tabIndex === item.text &&
                     (hasPermission(item.permission) ? (
-                      <div key={item.text}>
-                        {item.content}
-                      </div>
+                      <div key={item.text}>{item.content}</div>
                     ) : (
-                      <p key={item.text} className="text-red-500">Access-Denied: Content just only for admin...</p>
+                      <p key={item.text} className="text-red-500">
+                        Access-Denied: Content just only for admin...
+                      </p>
                     ))
                   );
                 })}

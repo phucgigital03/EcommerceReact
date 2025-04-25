@@ -51,9 +51,9 @@ api.interceptors.response.use(
       // Handle Unauthorized (401) Errors
       if (status === 401) {
         console.error("Unauthorized:", data.message);
-        await handleLogOut();
-        localStorage.removeItem("auth");
-        window.location.href = "/login";
+        // await handleLogOut();
+        // localStorage.removeItem("auth");
+        // window.location.href = "/login";
         return Promise.reject(
           new Error("Unauthorized - Redirecting to login.")
         );
