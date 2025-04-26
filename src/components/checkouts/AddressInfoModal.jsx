@@ -14,7 +14,7 @@ function AddressInfoModal({ open, setOpen, children }) {
       {/* Full-screen container to center the panel */}
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         {/* The actual dialog panel  */}
-        <DialogPanel className="relative w-full max-w-md mx-auto bg-white overflow-hidden transition-all shadow-md rounded-md">
+        <DialogPanel style={{maxWidth: "800px"}} className="relative w-full max-w-md mx-auto bg-white overflow-hidden transition-all shadow-md rounded-md">
           <div className="px-6 py-6">
             {children}
           </div>

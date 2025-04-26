@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Tabs, Tab, styled } from "@mui/material";
+import { Box, Tabs, Tab, styled, Typography } from "@mui/material";
 import {
   MdPendingActions,
   MdCheckCircle,
@@ -36,8 +36,10 @@ function OrderManagement() {
   };
 
   return (
-      <Box sx={{ maxWidth: 800, margin: "0 auto", p: 2 }}>
-      <h2 className="text-2xl font-bold">All Orders</h2>
+      <Box sx={{ margin: "0 auto", p: 2 }}>
+      <Typography sx={{mb: "0"}} variant="h4" gutterBottom>
+        All orders
+      </Typography>
       <StatusTabs
         value={tabValue}
         onChange={handleTabChange}

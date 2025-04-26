@@ -18,7 +18,7 @@ import CheckVNPayStatus from "./components/checkouts/CheckVNPayStatus";
 import NotFound from "./components/NotFound";
 import AccessDenied from "./components/AccessDenied";
 import DashboardManage from "./components/dashboard/DashboardManage";
-import Support from "./components/dashboard/Support";
+import Support from "./components/dashboard/contents/Support";
 import RbacRoute from "./components/RbacRoute";
 import { permissions } from "./config/rbacConfig";
 import { RiDashboardLine, RiUserLine, RiTruckLine } from "react-icons/ri";
@@ -93,8 +93,9 @@ export const sidebarItems = [
     text: "Support",
     icon: <MdPointOfSale />,
     link: "/dashboard/support",
-    component: <Support />,
+    component: <DashboardManage />,
     permission: permissions.VIEW_SUPPORT,
+    content: <Support />,
   },
 ];
 

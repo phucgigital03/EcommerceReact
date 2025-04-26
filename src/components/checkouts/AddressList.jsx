@@ -50,6 +50,10 @@ function AddressList({ addresses, setOpenAddressModal, setSelectedAddress,setOpe
                 </div>
                 <div className="flex items-center">
                   <FaStreetView size={16} className="mr-2 text-gray-600" />
+                  <p className="font-semibold">{address.receivePhone}</p>
+                </div>
+                <div className="flex items-center">
+                  <FaStreetView size={16} className="mr-2 text-gray-600" />
                   <p className="font-semibold">{address.street}</p>
                 </div>
                 <div className="flex items-center">

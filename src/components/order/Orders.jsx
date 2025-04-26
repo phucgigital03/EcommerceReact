@@ -58,7 +58,7 @@ const Orders = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 800, margin: "0 auto", p: 2 }}>
+    <Box sx={{ maxWidth: "800px", margin: "0 auto", p: 2 }}>
       <h2 className="text-2xl font-bold">All Orders</h2>
       <StatusTabs
         value={tabValue}

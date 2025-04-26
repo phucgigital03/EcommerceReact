@@ -41,8 +41,8 @@ function InventoryManagement() {
         setProducts(data?.content ? data?.content : []);
         setErrorMessage(null);
       } catch (error) {
-        console.log("Failed to fecth users: ", error);
-        setErrorMessage(error);
+        console.log("Failed to fecth users: ", error?.message);
+        setErrorMessage("Failed to fecth users");
       } finally {
         setLoading(false);
       }
@@ -58,8 +58,8 @@ function InventoryManagement() {
         setCategories(data?.content ? data?.content : []);
         setErrorMessage(null);
       } catch (error) {
-        console.log("Failed to fecth categories: ", error);
-        setErrorMessage(error);
+        console.log("Failed to fecth categories: ", error?.message);
+        setErrorMessage("Failed to fecth categories");
       } finally {
         setLoading(false);
       }
@@ -71,6 +71,19 @@ function InventoryManagement() {
     setSelectdProduct(null);
     setOpenProductModal(true);
   };
+
+  const handleEdit = (productId)=>{
+    console.log(productId);
+    const chosenProduct = products.find(product => product.productId == productId);
+    if(chosenProduct){
+      setSelectdProduct(chosenProduct);
+      setOpenProductModal(true);
+    }
+  }
+
+  const handleDelete = (productId)=>{
+    console.log(productId);
+  }
 
   if (errorMessage) {
     return <div>{errorMessage}</div>;
@@ -230,13 +243,13 @@ function InventoryManagement() {
                   <TableCell align="right">
                     <IconButton
                       color="primary"
-                      // onClick={() => handleEdit(product.id)}
+                      onClick={() => handleEdit(product?.productId)}
                     >
                       <FaEdit />
                     </IconButton>
                     <IconButton
                       color="error"
-                      // onClick={() => handleDelete(product.id)}
+                      onClick={() => handleDelete(product.id)}
                     >
                       <FaTrash />
                     </IconButton>

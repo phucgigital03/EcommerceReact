@@ -15,6 +15,9 @@ function AddProductForm({
   const {
     register,
     handleSubmit,
+    getValues,
+    setError,
+    clearErrors,
     formState: { errors },
     control,
   } = useForm({
@@ -25,7 +28,7 @@ function AddProductForm({
       discount: product?.discount || 0,
       quantity: product?.quantity || 1,
       description: product?.description || "",
-      category: categories?.[0]?.categoryId || 1,
+      categoryId: product?.categoryId || categories?.[0]?.categoryId || 1,
       //   imageFile: undefined,
     },
   });
@@ -40,60 +43,119 @@ function AddProductForm({
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(file);
+      clearErrors("imageFile");
+    }
+  };
+
+  const handleSubmitImage = async (productId) => {
+    const formValues = getValues(); // Gets all current form values
+    const imageFile = formValues.imageFile?.[0];
+    if (!imageFile) {
+      setError("imageFile", {
+        type: "manual",
+        message: "Please select an image before changing.",
+      });
+      return;
+    }
+
+    console.log("change image only", imageFile);
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    try {
+      const { data } = await api.put(`/products/${productId}/image`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      toast.success("Image updated successfully");
+      if (data) {
+        // Fetch updated products list
+        const { data: productsDB } = await api.get("/public/products");
+        console.log("AddProductForm: ", productsDB);
+        setProducts(productsDB?.content ? productsDB?.content : []);
+        setOpenProductModal(false);
+      }
+    } catch (error) {
+      toast.error("Failed to update image");
+      console.log("Failed to update image", error);
     }
   };
 
   const submitProductHandler = async (sendData) => {
     try {
-      // Create FormData object to handle file upload
-      const formData = new FormData();
+      console.log("click add update: productID ", product?.productId);
+      const productId = product?.productId;
+      let productDB = null;
 
-      formData.append(
-        "productDTO",
-        new Blob(
-          [
-            JSON.stringify({
-              productName: sendData.productName,
-              price: sendData.price,
-              discount: sendData.discount,
-              quantity: sendData.quantity,
-              description: sendData.description,
-            })
-          ],
-          { type: "application/json" }
-        )
-      );
-      // sendData.imageFile is a FileList, so take the first file
-      formData.append("imageFile", sendData.imageFile?.[0]);
+      if (productId) {
+        const { data } = await api.put(
+          `/admin/products/${productId}`,
+          sendData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        productDB = data;
+      } else {
+        // Create FormData object to handle file upload
+        const formData = new FormData();
 
-      // In ra tất cả key/value trong FormData
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
+        // append fields
+        formData.append(
+          "productDTO",
+          new Blob(
+            [
+              JSON.stringify({
+                productName: sendData.productName,
+                price: sendData.price,
+                discount: sendData.discount,
+                quantity: sendData.quantity,
+                description: sendData.description,
+              }),
+            ],
+            { type: "application/json" }
+          )
+        );
+        // sendData.imageFile is a FileList, so take the first file
+        formData.append("imageFile", sendData.imageFile?.[0]);
+
+        // In ra tất cả key/value trong FormData
+        for (let [key, value] of formData.entries()) {
+          console.log(key, value);
+        }
+
+        console.log(sendData);
+
+        const { data } = await api.post(
+          `/admin/categories/${sendData?.categoryId}/productWithImage`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        productDB = data;
       }
 
-      console.log(`/admin/categories/${sendData?.category}/productWithImage`);
-
-      const { data } = await api.post(
-        `/admin/categories/${sendData?.category}/productWithImage`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-        if (data) {
-          // Fetch updated products list
-          const { data: productsDB } = await api.get("/public/products");
-          console.log("AddProductForm: ", productsDB);
-          setProducts(productsDB?.content ? productsDB?.content : []);
-          setOpenProductModal(false);
-          toast.success("Product added successfully");
-        }
+      if (productDB) {
+        // Fetch updated products list
+        const { data: productsDB } = await api.get("/public/products");
+        console.log("AddProductForm: ", productsDB);
+        setProducts(productsDB?.content ? productsDB?.content : []);
+        setOpenProductModal(false);
+        toast.success(
+          productId
+            ? "Product updated successfully"
+            : "Product added successfully"
+        );
+      }
     } catch (error) {
-      toast.error("Failed to create product");
-      console.log("Failed to create product", error);
+      toast.error("Failed to handle product");
+      console.log("Failed to handle product", error);
     }
   };
 
@@ -103,7 +165,7 @@ function AddProductForm({
         <div className="flex items-center justify-center mb-4">
           <MdAddShoppingCart size={50} />
           <h1 className="text-slate-600 font-bold font-montserrat text-center sm:text-3xl text-xl">
-            {!product?.id ? "Add Product" : "Update Product"}
+            {!product?.productId ? "Add Product" : "Update Product"}
           </h1>
         </div>
         <hr className="mt-4 h-2" />
@@ -198,9 +260,11 @@ function AddProductForm({
               <select
                 id="category"
                 className={`w-full p-2 border rounded-md ${
-                  errors.category ? "border-red-500" : "border-gray-300"
+                  errors.categoryId ? "border-red-500" : "border-gray-300"
                 }`}
-                {...register("category", { required: "Category is required" })}
+                {...register("categoryId", {
+                  required: "Category is required",
+                })}
               >
                 {/* <option value="">Select a category</option> */}
                 {categories?.map((category) => (
@@ -209,9 +273,9 @@ function AddProductForm({
                   </option>
                 ))}
               </select>
-              {errors.category && (
+              {errors.categoryId && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.category.message}
+                  {errors.categoryId.message}
                 </p>
               )}
             </div>
@@ -281,7 +345,14 @@ function AddProductForm({
                 name="imageFile"
                 control={control}
                 rules={{
-                  required: !product?.image && "Product image is required",
+                  validate: (value) => {
+                    if (product?.image) {
+                      return true;
+                    }
+                    return (
+                      (value && value.length > 0) || "Product image is required"
+                    );
+                  },
                 }}
                 render={({ field }) => (
                   <input
@@ -300,15 +371,28 @@ function AddProductForm({
                 </p>
               )}
 
-              {imagePreview && (
-                <div className="mt-2">
-                  <img
-                    src={imagePreview}
-                    alt="Product preview"
-                    className="w-32 h-32 object-cover border rounded-md"
-                  />
-                </div>
-              )}
+              <div className="flex justify-start items-end">
+                {imagePreview && (
+                  <div className="mt-2">
+                    <img
+                      src={imagePreview}
+                      alt="Product preview"
+                      className="w-32 h-32 object-cover border rounded-md"
+                    />
+                  </div>
+                )}
+                {product?.productId && (
+                  <button
+                    type="button"
+                    className="ml-4 mt-2 py-2 px-2 flex justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-400 transition-colors duration-200"
+                    onClick={() => {
+                      handleSubmitImage(product?.productId);
+                    }}
+                  >
+                    Change Image
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
