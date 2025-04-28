@@ -23,6 +23,7 @@ import { roles } from "../../../config/rbacConfig";
 import api from "../../../api/api";
 import GeneralModal from "../../shared/GeneralModal";
 import AddUserForm from "./forms/AddUserForm";
+import DeleteUserForm from "./forms/DeleteUserForm";
 
 const fakeRoles = [
   {
@@ -54,7 +55,7 @@ function UserManagement() {
         // setUsers(fakeUsers);
         const { data } = await api.get("/users");
         console.log(data);
-        setUsers(data)
+        setUsers(data.filter(user => !user.deleted));
       } catch (error) {
         console.log("Failed to fecth users: ", error);
       }
@@ -87,6 +88,16 @@ function UserManagement() {
     if (chosenUser) {
       setSelectdUser(chosenUser);
       setAddUserModal(true);
+    }
+  }
+
+  const handleDelete = (userId)=>{
+    const chosenUser = users.find(
+      (user) => user.id == userId
+    );
+    if (chosenUser) {
+      setSelectdUser(chosenUser);
+      setDeleteUserModal(true);
     }
   }
 
@@ -194,7 +205,7 @@ function UserManagement() {
                   </IconButton>
                   <IconButton
                     color="error"
-                    // onClick={() => handleDeleteUser(user.id)}
+                    onClick={() => handleDelete(user?.id)}
                   >
                     <FaTrash />
                   </IconButton>
@@ -204,6 +215,17 @@ function UserManagement() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {
+        /* open delete User */
+        <GeneralModal open={deleteUserModal} setOpen={setDeleteUserModal}>
+          <DeleteUserForm
+            user={selectedUser}
+            setUsers={setUsers}
+            setOpenDeleteModal={setDeleteUserModal}
+          />
+        </GeneralModal>
+      }
     </Box>
   );
 }
