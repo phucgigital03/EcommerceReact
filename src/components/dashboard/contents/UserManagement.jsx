@@ -39,6 +39,7 @@ function UserManagement() {
   const [users, setUsers] = useState([]);
   const [roleDBs, setRoleDBs] = useState([]);
   const [addUserModal, setAddUserModal] = useState(false);
+  const [deleteUserModal, setDeleteUserModal] = useState(false);
   const [selectedUser, setSelectdUser] = useState(null);
 
   // Slice users for pagination
@@ -78,6 +79,16 @@ function UserManagement() {
     setSelectdUser(null);
     setAddUserModal(true);
   };
+
+  const handleEdit = (userId)=>{
+    const chosenUser = users.find(
+      (user) => user.id == userId
+    );
+    if (chosenUser) {
+      setSelectdUser(chosenUser);
+      setAddUserModal(true);
+    }
+  }
 
   return (
     <Box sx={{ width: "100%", maxWidth: "100%", margin: "auto", mt: 4 }}>
@@ -176,8 +187,7 @@ function UserManagement() {
                   <IconButton
                     color="primary"
                     onClick={() => {
-                      // setCurrentUser(user);
-                      // setOpenEditModal(true);
+                      handleEdit(user?.id);
                     }}
                   >
                     <FaEdit />

@@ -11,7 +11,8 @@ const InputField = ({
     className,
     min,
     value,
-    placeholder
+    placeholder,
+    disabled
 })=>{
 
     return (
@@ -25,6 +26,7 @@ const InputField = ({
                 {label}
             </label>
             <input 
+                disabled={disabled}
                 type={type} 
                 id={id}
                 placeholder={placeholder}

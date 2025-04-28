@@ -1,6 +1,6 @@
 import { FormControl, FormGroup, FormControlLabel, Checkbox, FormHelperText } from "@mui/material";
 
-function CheckBoxField({ id, label, errors, options, register, setValue, getValues }) {
+function CheckBoxField({ id, label, errors, options, register, setValue, getValues,setError,clearErrors }) {
     // console.log(options)
 
     const handleCheckboxChange = (value) => {
@@ -11,6 +11,15 @@ function CheckBoxField({ id, label, errors, options, register, setValue, getValu
           : [...selectedValues, value]; // Add if unchecked
     
         setValue(id, newValues, { shouldValidate: true });
+
+        if (newValues.length === 0) {
+          setError('role', {
+            type: 'manual',
+            message: 'Please select at least one role',
+          });
+        } else {
+          clearErrors('role');
+        }
     };
 
   return (
@@ -22,9 +31,9 @@ function CheckBoxField({ id, label, errors, options, register, setValue, getValu
               key={option.value}
               control={
                 <Checkbox
-                  {...register(id, {
-                    validate: (value) => value.length > 0 || "Please select at least one option",
-                  })}
+                  // {...register(id, {
+                  //   validate: (value) => value.length > 0 || "Please select at least one option",
+                  // })}
                   value={option.value}
                   onChange={() => handleCheckboxChange(option.value)}
                   checked={getValues(id)?.includes(option.value)}

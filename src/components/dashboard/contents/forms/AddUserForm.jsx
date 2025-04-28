@@ -10,36 +10,61 @@ import toast from "react-hot-toast";
 // "role": ["admin1233"],
 // "password": "123456"
 
-function AddUserForm({ user, roleDBs ,setOpenUserModal, setUsers }) {
+function AddUserForm({ user, roleDBs, setOpenUserModal, setUsers }) {
   const {
     register,
     handleSubmit,
     setValue,
     getValues,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm({
     mode: "onTouched",
     defaultValues: {
-      role: [], // Store selected checkboxes
+      role:  user?.roles?.map(role => {
+        if(role.roleName == "ROLE_USER"){
+          return "user"
+        }else if(role.roleName == "ROLE_SELLER") {
+          return "seller"
+        }
+      }) || ["user"], // Store selected checkboxes
+      username: user?.username || "",
+      email: user?.email || "",
     },
   });
 
   const submitNewUserHandler = async (sendData) => {
     try {
-        console.log("AddUserForm: ",sendData);
-        const { data } = await api.post('/auth/signup', sendData);
-        if(data){
-            const { data: userDBs } = await api.get("/users");
-            console.log("AddUserForm: ",userDBs);
-            setUsers(userDBs);
-            setOpenUserModal(false);
-            toast.success("Add user successfully")
-        }
+      const userId = user?.id;
+      let userDB = null;
+
+      if(userId){
+        // 
+        const { data } = await api.put(`users/${userId}`, sendData);
+        userDB = data;
+      }else{
+        // 
+        const { data } = await api.post("/auth/signup", sendData);
+        userDB = data;
+      }
+
+      
+      if (userDB) {
+        const { data: userDBs } = await api.get("/users");
+        console.log("AddUserForm: ", userDBs);
+        setUsers(userDBs);
+        setOpenUserModal(false);
+        toast.success(userId ? "Update user successfully" : "Add user successfully");
+      }
     } catch (error) {
-        toast.error("Failed to create user")
-        console.log("Failed to create user", error)
+      toast.error("Failed to handle user");
+      console.log("Failed to handle user", error);
     }
   };
+
+  // console.log("roleDBs", roleDBs);
+  // console.log("user", user);
 
   return (
     <div className="">
@@ -72,16 +97,18 @@ function AddUserForm({ user, roleDBs ,setOpenUserModal, setUsers }) {
             errors={errors}
             message={"email is required"}
           />
-          <InputField
-            id={"password"}
-            type={"password"}
-            label={"Password"}
-            required
-            placeholder={"Enter your password"}
-            register={register}
-            errors={errors}
-            message={"password is required"}
-          />
+          {!user?.id && (
+            <InputField
+              id={"password"}
+              type={"password"}
+              label={"Password"}
+              required
+              placeholder={"Enter your password"}
+              register={register}
+              errors={errors}
+              message={"password is required"}
+            />
+          )}
           <CheckBoxField
             id={"role"}
             label={"Roles"}
@@ -90,12 +117,11 @@ function AddUserForm({ user, roleDBs ,setOpenUserModal, setUsers }) {
             register={register}
             setValue={setValue}
             getValues={getValues}
+            setError={setError}
+            clearErrors={clearErrors}
           />
         </div>
-        <button
-          //   disabled={btnLoader}
-          className="mt-10 mb-4 py-2 text-2xl w-full flex justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-400 transition-colors duration-200"
-        >
+        <button className="mt-10 mb-4 py-2 text-2xl w-full flex justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-400 transition-colors duration-200">
           Save
         </button>
       </form>
