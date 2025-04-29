@@ -24,6 +24,7 @@ import GeneralModal from "../../shared/GeneralModal";
 import { formatPrice } from "../../../utils/formatPrice";
 import AddProductForm from "./forms/AddProductForm";
 import Loader from "../../shared/Loader";
+import DeleteProductForm from "./forms/DeleteProductForm";
 
 function InventoryManagement() {
   const [loading, setLoading] = useState(false);
@@ -31,6 +32,7 @@ function InventoryManagement() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [addProductModal, setOpenProductModal] = useState(false);
+  const [deleteProductModal, setDeleteProductModal] = useState(false);
   const [selectedProduct, setSelectdProduct] = useState(null);
 
   useEffect(() => {
@@ -38,7 +40,9 @@ function InventoryManagement() {
       try {
         setLoading(true);
         const { data } = await api.get("/public/products");
-        setProducts(data?.content ? data?.content : []);
+        setProducts(data?.content ? 
+          data?.content?.filter(product => !product.deleted) : []
+        );
         setErrorMessage(null);
       } catch (error) {
         console.log("Failed to fecth users: ", error?.message);
@@ -72,18 +76,27 @@ function InventoryManagement() {
     setOpenProductModal(true);
   };
 
-  const handleEdit = (productId)=>{
+  const handleEdit = (productId) => {
     console.log(productId);
-    const chosenProduct = products.find(product => product.productId == productId);
-    if(chosenProduct){
+    const chosenProduct = products.find(
+      (product) => product.productId == productId
+    );
+    if (chosenProduct) {
       setSelectdProduct(chosenProduct);
       setOpenProductModal(true);
     }
-  }
+  };
 
-  const handleDelete = (productId)=>{
+  const handleDelete = (productId) => {
     console.log(productId);
-  }
+    const chosenProduct = products.find(
+      (product) => product.productId == productId
+    );
+    if (chosenProduct) {
+      setSelectdProduct(chosenProduct);
+      setDeleteProductModal(true);
+    }
+  };
 
   if (errorMessage) {
     return <div>{errorMessage}</div>;
@@ -249,7 +262,7 @@ function InventoryManagement() {
                     </IconButton>
                     <IconButton
                       color="error"
-                      onClick={() => handleDelete(product.id)}
+                      onClick={() => handleDelete(product.productId)}
                     >
                       <FaTrash />
                     </IconButton>
@@ -260,6 +273,17 @@ function InventoryManagement() {
           </Table>
         </TableContainer>
       )}
+
+      {
+        /* open delete product */
+        <GeneralModal open={deleteProductModal} setOpen={setDeleteProductModal}>
+          <DeleteProductForm
+            product={selectedProduct}
+            setProducts={setProducts}
+            setOpenDeleteModal={setDeleteProductModal}
+          />
+        </GeneralModal>
+      }
     </Box>
   );
 }
