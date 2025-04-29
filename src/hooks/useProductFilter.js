@@ -19,7 +19,7 @@ const useProductFilter = ()=>{
                         : 2;
         params.set("pageSize", sizePage);
 
-        const sortOrder = searchParams.get("sortby") || "asc";
+        const sortOrder = searchParams.get("sortOrder") || "asc";
         params.set("sortBy","price");
         params.set("sortOrder",sortOrder);
         

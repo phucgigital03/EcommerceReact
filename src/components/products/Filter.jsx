@@ -55,7 +55,7 @@ function Filter({ categories }) {
   const toggleSortOrder = ()=>{
     setSortOrder((prevOrder)=>{
       const newOrder = prevOrder === "asc" ? "desc" : "asc";
-      params.set("sortby",newOrder)
+      params.set("sortOrder",newOrder)
       navigate(`${pathname}?${params}`)
       return newOrder
     })
