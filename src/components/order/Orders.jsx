@@ -24,8 +24,6 @@ const StatusTabs = styled(Tabs)(({ theme }) => ({
   },
 }));
 
-// Sample data
-
 const Orders = () => {
   const [loading, setLoading] = useState(false);
   const [error,setError] = useState(null);
@@ -41,7 +39,7 @@ const Orders = () => {
         setError(null);
       } catch (error) {
         console.log("Failed to fetch order history" + error);
-        setError(error);
+        setError("Failed to fetch order history");
       } finally {
         setLoading(false);
       }

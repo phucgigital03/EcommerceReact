@@ -73,6 +73,7 @@ function CheckVNPayStatus() {
                 <span className="ml-2 font-semibold">{currentOrder?.orderStatus}</span>
               </h3>
               <p className="text-gray-500 text-sm mb-6">{status.message}</p>
+              <p className="text-gray-500 text-sm mb-6">Order confirm has been sent via {currentOrder?.email}</p>
               <Link
                 to={"/"}
                 className="btn bg-blue-600 text-white px-2 py-2 rounded-md hover:bg-blue-400 transition-colors duration-200"

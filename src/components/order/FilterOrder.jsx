@@ -1,7 +1,17 @@
-import { Box, Paper, Typography, Divider, Grid, styled, Button } from "@mui/material";
-import { useState } from "react";
+import {
+  Box,
+  Paper,
+  Typography,
+  Divider,
+  Grid,
+  styled,
+  Button,
+} from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import { FaEye } from "react-icons/fa";
 import { IoPrint } from "react-icons/io5";
+import { useReactToPrint } from "react-to-print";
+import PrintableOrderContent from "../shared/PrintableOrderContent";
 
 // Styled components
 const OrderCard = styled(Paper)(({ theme }) => ({
@@ -18,7 +28,10 @@ const OrderDetail = styled(Box)(({ theme }) => ({
 
 function FilterOrder({ orderType, orders = [] }) {
   console.log(orderType, orders);
-  const [selectedOrderId,setSelectedOrderId] = useState(null);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [orderToPrint, setOrderToPrint] = useState(null);
+  // Create a single ref for the component to print
+  const printRef = useRef(null);
 
   const filterOrder = orders.filter((order) => {
     switch (orderType) {
@@ -44,32 +57,89 @@ function FilterOrder({ orderType, orders = [] }) {
   });
   console.log(filterOrder);
 
-  const handleView = (orderId)=>{
-    console.log(orderId)
-    setSelectedOrderId(currentOrderId => {
-      if(currentOrderId == orderId){
+  const handleView = (orderId) => {
+    console.log(orderId);
+    setSelectedOrderId((currentOrderId) => {
+      if (currentOrderId == orderId) {
         return null;
-      }else{
+      } else {
         return orderId;
       }
-    })
-  }
+    });
+  };
+
+  // Set up react-to-print hook
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: `Order_${orderToPrint?.orderId}_Confirmation`,
+    onBeforeGetContent: () => {
+      console.log("Preparing print content...", printRef.current);
+      // Make sure we have content to print
+      if (!printRef.current) {
+        return Promise.reject("No content to print");
+      }
+      return Promise.resolve();
+    },
+    onAfterPrint: () => {
+      console.log("Print completed successfully!");
+      // Clear the orderToPrint state after successful printing
+      setTimeout(() => setOrderToPrint(null), 500);
+    },
+    onPrintError: (error) => {
+      console.error("Print failed:", error);
+      setOrderToPrint(null); // Reset order after print
+    },
+    removeAfterPrint: true
+  });
+
+  // This function sets which order to print and triggers the print
+  const triggerPrint = (order) => {
+    console.log("Setting order to print:", order.orderId);
+    setOrderToPrint({...order});
+  };
+
+  // When orderToPrint changes, trigger the print operation
+  // but only after ensuring the printRef has been populated
+  useEffect(() => {
+    if (orderToPrint && printRef.current) {
+      // Add a small delay to ensure the component is fully rendered
+      const timer = setTimeout(() => {
+        console.log("Triggering print with ref:", printRef.current);
+        try {
+          handlePrint();
+        } catch (error) {
+          console.error("Print error:", error);
+          // Reset the orderToPrint state to prevent potential memory leaks
+          setOrderToPrint(null);
+        }
+      }, 300);
+      
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [orderToPrint]);
 
   return (
     <div className="mt-2">
       {filterOrder.length > 0 ? (
         filterOrder.map((order) => (
           <OrderCard key={order.orderId} elevation={1}>
-            <Typography className="flex items-center justify-between" variant="h6" color="primary" gutterBottom>
+            <Typography
+              className="flex items-center justify-between"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
               <p>Order ID: {order.orderId}</p>
-              {orderType && (
+              {
                 <div className="flex gap-x-2 justify-end items-center">
                   <Button
                     className="min-w-[100px] w-[100px]"
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                      handleView(order.orderId)
+                      handleView(order.orderId);
                     }}
                   >
                     <FaEye />
@@ -80,13 +150,14 @@ function FilterOrder({ orderType, orders = [] }) {
                     variant="contained"
                     color="error"
                     onClick={() => {
+                      triggerPrint(order);
                     }}
                   >
                     <IoPrint />
                     <span className="ml-1">Print</span>
                   </Button>
                 </div>
-              )}
+              }
             </Typography>
 
             <OrderDetail>
@@ -114,7 +185,7 @@ function FilterOrder({ orderType, orders = [] }) {
             </OrderDetail>
 
             {/* User show detail immedially */}
-            {(!orderType || order?.orderId == selectedOrderId) && (
+            {order?.orderId == selectedOrderId && (
               <>
                 <Divider sx={{ my: 2 }} />
                 <Box>
@@ -187,6 +258,13 @@ function FilterOrder({ orderType, orders = [] }) {
         ))
       ) : (
         <div>No orders we can find</div>
+      )}
+
+      {/* Printable content component - IMPORTANT: Now only rendered when there's an order to print */}
+      {orderToPrint && (
+        <div style={{ display: "none" }}>
+          <PrintableOrderContent ref={printRef} order={orderToPrint} />
+        </div>
       )}
     </div>
   );
