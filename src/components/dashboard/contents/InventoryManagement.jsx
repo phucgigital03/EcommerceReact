@@ -25,6 +25,7 @@ import { formatPrice } from "../../../utils/formatPrice";
 import AddProductForm from "./forms/AddProductForm";
 import Loader from "../../shared/Loader";
 import DeleteProductForm from "./forms/DeleteProductForm";
+import { MdFileDownload, MdFileUpload } from "react-icons/md";
 
 function InventoryManagement() {
   const [loading, setLoading] = useState(false);
@@ -40,8 +41,10 @@ function InventoryManagement() {
       try {
         setLoading(true);
         const { data } = await api.get("/public/products");
-        setProducts(data?.content ? 
-          data?.content?.filter(product => !product.deleted) : []
+        setProducts(
+          data?.content
+            ? data?.content?.filter((product) => !product.deleted)
+            : []
         );
         setErrorMessage(null);
       } catch (error) {
@@ -98,6 +101,14 @@ function InventoryManagement() {
     }
   };
 
+  const handleImportProduct = ()=>{
+
+  }
+
+  const handleExportProduct = ()=>{
+
+  }
+
   if (errorMessage) {
     return <div>{errorMessage}</div>;
   }
@@ -107,7 +118,7 @@ function InventoryManagement() {
       <Typography variant="h4" gutterBottom>
         Inventory Management
       </Typography>
-      
+
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
         {/* Search and Add User Section */}
         <div className="wrap-search-role flex items-center">
@@ -147,32 +158,56 @@ function InventoryManagement() {
           </FormControl>
         </div>
         {/* import and export excel file */}
-        <div>
-          import and export
+        <div className="flex justify-between items-center">
+          <Button
+            className="w-fit"
+            variant="contained"
+            color="warning"
+            startIcon={<MdFileUpload />}
+            onClick={() => {
+              handleImportProduct();
+            }}
+            sx={{marginLeft: "10px"}}
+          >
+            <span>Import</span>
+          </Button>
+          <Button
+            className="w-fit"
+            variant="contained"
+            color="success"
+            startIcon={<MdFileDownload />}
+            onClick={() => {
+              handleExportProduct();
+            }}
+            sx={{marginLeft: "10px"}}
+          >
+            <span>Export</span>
+          </Button>
+          <Button
+            className="w-fit"
+            variant="contained"
+            color="primary"
+            startIcon={<FaPlus />}
+            onClick={() => {
+              handleAddProduct();
+            }}
+            sx={{marginLeft: "10px"}}
+          >
+            <span>Add Product</span>
+          </Button>
+          <GeneralModal
+            customStyle={{ maxWidth: "880px" }}
+            open={addProductModal}
+            setOpen={setOpenProductModal}
+          >
+            <AddProductForm
+              product={selectedProduct}
+              setProducts={setProducts}
+              setOpenProductModal={setOpenProductModal}
+              categories={categories}
+            />
+          </GeneralModal>
         </div>
-        <Button
-          className="min-w-[200px] w-[200px]"
-          variant="contained"
-          color="primary"
-          startIcon={<FaPlus />}
-          onClick={() => {
-            handleAddProduct();
-          }}
-        >
-          <span>Add Product</span>
-        </Button>
-        <GeneralModal
-          customStyle={{ maxWidth: "880px" }}
-          open={addProductModal}
-          setOpen={setOpenProductModal}
-        >
-          <AddProductForm
-            product={selectedProduct}
-            setProducts={setProducts}
-            setOpenProductModal={setOpenProductModal}
-            categories={categories}
-          />
-        </GeneralModal>
       </Box>
 
       {loading ? (
