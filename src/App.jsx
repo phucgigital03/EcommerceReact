@@ -32,6 +32,7 @@ import InventoryManagement from "./components/dashboard/contents/InventoryManage
 import Profile from "./components/profile/Profile";
 import OAuth2RedirectHandler from "./components/auth/OAuth2RedirectHandler";
 import Orders from "./components/order/Orders";
+import HomeDashboardManagement from "./components/dashboard/contents/HomeDashboardManagement";
 
 // /dashboard
 // /dashboard/usermanagement
@@ -47,7 +48,7 @@ export const sidebarItems = [
     link: "/dashboard",
     component: <DashboardManage />,
     permission: permissions.VIEW_ADMIN_TOOLS,
-    content: <div>Some charts</div>,
+    content: <HomeDashboardManagement/>,
   },
   {
     text: "User Management",
