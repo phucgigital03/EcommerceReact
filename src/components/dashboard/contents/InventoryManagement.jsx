@@ -107,8 +107,9 @@ function InventoryManagement() {
       <Typography variant="h4" gutterBottom>
         Inventory Management
       </Typography>
-      {/* Search and Add User Section */}
+      
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        {/* Search and Add User Section */}
         <div className="wrap-search-role flex items-center">
           {/* Search Bar */}
           <div className="relative flex items-center 2xl:w-[450px] sm:w-[420px] w-full">
@@ -145,6 +146,10 @@ function InventoryManagement() {
             </Select>
           </FormControl>
         </div>
+        {/* import and export excel file */}
+        <div>
+          import and export
+        </div>
         <Button
           className="min-w-[200px] w-[200px]"
           variant="contained"
@@ -156,7 +161,6 @@ function InventoryManagement() {
         >
           <span>Add Product</span>
         </Button>
-
         <GeneralModal
           customStyle={{ maxWidth: "880px" }}
           open={addProductModal}

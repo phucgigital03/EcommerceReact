@@ -45,7 +45,7 @@ const options = {
   },
 };
 
-function BarGraph({ styleClass }) {
+function BarGraph({ styleClass, refresh }) {
   const [monthlyData, setMonthlyData] = useState({
     labels: [],
     datasets: [
@@ -60,7 +60,7 @@ function BarGraph({ styleClass }) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [availableYears, setAvailableYears] = useState([]);
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState("");
 
   const handleYearChange = (e) => {
     setSelectedYear(e.target.value);
@@ -70,16 +70,15 @@ function BarGraph({ styleClass }) {
   useEffect(() => {
     const fetchAvailableYears = async () => {
       try {
-        const {data} = await api.get('/revenue/availableyears');
-        console.log(data)
-        // setAvailableYears(response.data);
-        // // Set default year to the most recent year if available
-        // if (response.data.length > 0) {
-        //   setSelectedYear(response.data[0]);
-        // }
+        const { data } = await api.get("/public/order/availableYears");
+        setAvailableYears(data);
+        // Set default year to the most recent year if available
+        if (data.length > 0) {
+            setSelectedYear(data[0]);
+          }
       } catch (err) {
         console.log("Failed to load available years: " + err.message);
-        toast.error("Failed to load available years")
+        toast.error("Failed to load available years");
       }
     };
     fetchAvailableYears();
@@ -90,36 +89,37 @@ function BarGraph({ styleClass }) {
     const fetchMonthlyRevenue = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get(`/revenue/monthly?year=${selectedYear}`);
-        
-        const months = response.data.map(item => item.month);
-        const revenues = response.data.map(item => item.revenue);
-        
+        const { data } = await api.get(
+          `/order/revenue/monthly?year=${selectedYear}`
+        );
+
+        const months = data.map((item) => item.month);
+        const revenues = data.map((item) => item.revenue);
+
         setMonthlyData({
           labels: months,
           datasets: [
             {
               label: `${selectedYear} Revenue`,
               data: revenues,
-              backgroundColor: 'rgba(54, 162, 235, 0.6)',
-              borderColor: 'rgba(54, 162, 235, 1)',
+              backgroundColor: "rgba(54, 162, 235, 0.6)",
+              borderColor: "rgba(54, 162, 235, 1)",
               borderWidth: 1,
             },
           ],
         });
       } catch (err) {
         console.log("Failed to load monthly revenue data" + err.message);
-        toast.error("Failed to load monthly revenue data")
-      }finally{
+        toast.error("Failed to load monthly revenue data");
+      } finally {
         setIsLoading(false);
       }
     };
-    
+
     if (selectedYear) {
       fetchMonthlyRevenue();
     }
-  }, [selectedYear]);
-
+  }, [selectedYear, refresh]);
 
   return (
     <div className={styleClass ? styleClass : ""}>
@@ -133,14 +133,12 @@ function BarGraph({ styleClass }) {
           label="Years"
           onChange={handleYearChange}
         >
-          <MenuItem key={"currentYear"} value={selectedYear}>
-            {selectedYear}
-          </MenuItem>
-          {availableYears.map((year) => (
-            <MenuItem key={year} value={year}>
-              {year}
-            </MenuItem>
+          {availableYears.map(year => (
+            <MenuItem key={year} value={year}>{year}</MenuItem>
           ))}
+          {availableYears.length === 0 && (
+            <MenuItem value="">No years available</MenuItem>
+          )}
         </Select>
       </FormControl>
 

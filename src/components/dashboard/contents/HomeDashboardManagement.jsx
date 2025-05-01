@@ -48,6 +48,7 @@ function HomeDashboardManagement() {
     },
   ]);
   const [refresh, setRefresh] = useState(false);
+  const [refreshMonthlyRevenue, setRefreshMonthlyRevenue] = useState(false);
 
   //  fetch Product Count
   useEffect(() => {
@@ -141,6 +142,10 @@ function HomeDashboardManagement() {
     setRefresh(!refresh);
   };
 
+  const handleRefreshMontlyRevenue = ()=>{
+    setRefreshMonthlyRevenue(!refreshMonthlyRevenue);
+  }
+
   console.log(stats);
 
   return (
@@ -175,14 +180,14 @@ function HomeDashboardManagement() {
           <div className="flex justify-between items-center pb-6">
             <h1 className="text-2xl font-medium">Montly revenue analysis</h1>
             <button
-              // onClick={}
+              onClick={handleRefreshMontlyRevenue}
               className="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
             >
               <TfiReload className="mr-1" />
               Refresh
             </button>
           </div>
-          <BarGraph styleClass={"h-[400px]"} />
+          <BarGraph refresh={refreshMonthlyRevenue} styleClass={"h-[400px]"} />
         </div>
         <div className="top10ProductsSellQickly mt-20 ">
           <div className="flex justify-between items-center pb-6">
