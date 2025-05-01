@@ -10,6 +10,10 @@ import {
   Legend,
 } from "chart.js";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useState } from "react";
+
 const lineChartData = {
   labels: [
     "Monday",
@@ -54,8 +58,33 @@ CHARTJS.register(
 );
 
 function LineGraph({ styleClass }) {
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
+
   return (
     <div className={styleClass ? styleClass : ""}>
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-600 mb-1">
+            From Date
+          </label>
+          <DatePicker
+            selected={fromDate}
+            onChange={(date) => setFromDate(date)}
+            className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-600 mb-1">
+            To Date
+          </label>
+          <DatePicker
+            selected={toDate}
+            onChange={(date) => setToDate(date)}
+            className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
       <Line options={options} data={lineChartData} />
     </div>
   );

@@ -176,7 +176,7 @@ function HomeDashboardManagement() {
       </div>
 
       <div className="charts h-auto">
-        <div className="montlyRevenue mt-20 ">
+        <div className="montlyRevenue mt-20 p-[20px] pb-[60px] shadow-lg">
           <div className="flex justify-between items-center pb-6">
             <h1 className="text-2xl font-medium">Montly revenue analysis</h1>
             <button
@@ -189,7 +189,7 @@ function HomeDashboardManagement() {
           </div>
           <BarGraph refresh={refreshMonthlyRevenue} styleClass={"h-[400px]"} />
         </div>
-        <div className="top10ProductsSellQickly mt-20 ">
+        <div className="top10ProductsSellQickly mt-20 p-[20px] pb-[100px] shadow-lg">
           <div className="flex justify-between items-center pb-6">
             <h1 className="text-2xl font-medium">Top 10 produtcs sell quickly</h1>
             <button
@@ -202,7 +202,7 @@ function HomeDashboardManagement() {
           </div>
           <LineGraph styleClass={"h-[400px]"} />
         </div>
-        <div className="registerMethod mt-20 ">
+        <div className="registerMethod mt-20 p-[20px] pb-[60px] shadow-lg">
           <div className="flex justify-between items-center pb-6">
             <h1 className="text-2xl font-medium">Register method </h1>
             <button
