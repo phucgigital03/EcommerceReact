@@ -36,6 +36,7 @@ function InventoryManagement() {
   const [addProductModal, setOpenProductModal] = useState(false);
   const [deleteProductModal, setDeleteProductModal] = useState(false);
   const [selectedProduct, setSelectdProduct] = useState(null);
+  const [exportModal, setExportModal] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -123,21 +124,20 @@ function InventoryManagement() {
         setLoading(true);
 
         // Send file to backend API
-        const { data } = await api.post('/products/import', formData, {
+        const { data } = await api.post("/products/import", formData, {
           headers: {
-            'Content-Type': 'multipart/form-data'
+            "Content-Type": "multipart/form-data",
           },
         });
         console.log("Import product:", data);
         toast.success(`Total item: ${data?.totalItems}, 
           Sucessful item: ${data.successCount},
           Failed item: ${data?.failureCount}
-          `
-        )
+          `);
         fetchProducts();
       } catch (error) {
         console.log("Failed to import products: ", error?.message);
-        toast.error("Failed to import products: ")
+        toast.error("Failed to import products: ");
       } finally {
         setLoading(false);
       }
@@ -147,7 +147,86 @@ function InventoryManagement() {
     fileInput.click();
   };
 
-  const handleExportProduct = () => {};
+  const handleExportProductModal = () => {
+    setExportModal(true);
+  };
+
+  const handleExportProduct = async () => {
+    console.log("Export products");
+    try {
+      setLoading(true);
+      // Use Axios to get the file with responseType blob
+      const { data, headers } = await api.get("/products/export", {
+        responseType: "blob", // Important for file downloads
+      });
+      const blob = new Blob([data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      // Get default filename from Content-Disposition header if available
+      const contentDisposition = headers["content-disposition"];
+      let filename = "products.xlsx";
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
+        if (filenameMatch && filenameMatch.length === 2) {
+          filename = filenameMatch[1];
+        }
+      }
+
+      // Check if the File System Access API is supported
+      if ("showSaveFilePicker" in window) {
+        try {
+          // Show the file picker
+          const fileHandle = await window.showSaveFilePicker({
+            suggestedName: filename,
+            types: [
+              {
+                description: "Excel Files",
+                accept: {
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                    [".xlsx"],
+                },
+              },
+            ],
+          });
+
+          // Create a writable stream and write the blob data
+          const writable = await fileHandle.createWritable();
+          await writable.write(data);
+          await writable.close();
+          toast.success("Export products succesfully!");
+        } catch (error) {
+          // User canceled the file picker or other error
+          if (error.name !== "AbortError") {
+            console.error("Error saving file:", error);
+            toast.error("Error saving file: " + error.message, "error");
+          } else {
+            // User cancelled the dialog
+            toast.error("Export cancelled");
+          }
+        }
+      } else {
+        // Fallback to download
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "products.xlsx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        toast.success("Export products succesfully!");
+      }
+
+      setExportModal(false);
+    } catch (error) {
+      console.log("Failed to export products: ", error?.message);
+      toast.error("Failed to export products: ");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (errorMessage) {
     return <div>{errorMessage}</div>;
@@ -217,12 +296,44 @@ function InventoryManagement() {
             color="success"
             startIcon={<MdFileDownload />}
             onClick={() => {
-              handleExportProduct();
+              handleExportProductModal();
             }}
             sx={{ marginLeft: "10px" }}
           >
             <span>Export</span>
           </Button>
+          <GeneralModal
+            customStyle={{ maxWidth: "400px" }}
+            open={exportModal}
+            setOpen={setExportModal}
+          >
+            <div>
+              <p>All products will export and save with products.xlsx</p>
+              <p className="text-red-500">Do you want to export?</p>
+              <div className="mt-2 flex gap-x-2 justify-end items-center">
+                <Button
+                  className="min-w-[100px] w-[100px]"
+                  variant="contained"
+                  color="error"
+                  onClick={() => {
+                    setExportModal(false);
+                  }}
+                >
+                  <span>Cancel</span>
+                </Button>
+                <Button
+                  className="min-w-[100px] w-[100px]"
+                  variant="contained"
+                  color="success"
+                  onClick={() => {
+                    handleExportProduct();
+                  }}
+                >
+                  <span>Yes</span>
+                </Button>
+              </div>
+            </div>
+          </GeneralModal>
           <Button
             className="w-fit"
             variant="contained"
