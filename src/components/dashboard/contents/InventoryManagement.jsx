@@ -26,6 +26,7 @@ import AddProductForm from "./forms/AddProductForm";
 import Loader from "../../shared/Loader";
 import DeleteProductForm from "./forms/DeleteProductForm";
 import { MdFileDownload, MdFileUpload } from "react-icons/md";
+import toast from "react-hot-toast";
 
 function InventoryManagement() {
   const [loading, setLoading] = useState(false);
@@ -36,24 +37,25 @@ function InventoryManagement() {
   const [deleteProductModal, setDeleteProductModal] = useState(false);
   const [selectedProduct, setSelectdProduct] = useState(null);
 
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const { data } = await api.get("/public/products");
+      setProducts(
+        data?.content
+          ? data?.content?.filter((product) => !product.deleted)
+          : []
+      );
+      setErrorMessage(null);
+    } catch (error) {
+      console.log("Failed to fecth users: ", error?.message);
+      setErrorMessage("Failed to fecth users");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const { data } = await api.get("/public/products");
-        setProducts(
-          data?.content
-            ? data?.content?.filter((product) => !product.deleted)
-            : []
-        );
-        setErrorMessage(null);
-      } catch (error) {
-        console.log("Failed to fecth users: ", error?.message);
-        setErrorMessage("Failed to fecth users");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchProducts();
   }, []);
 
@@ -101,13 +103,51 @@ function InventoryManagement() {
     }
   };
 
-  const handleImportProduct = ()=>{
+  const handleImportProduct = () => {
+    // Create file input element
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".xlsx, .xls, .csv";
 
-  }
+    // Handle file selection
+    fileInput.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-  const handleExportProduct = ()=>{
+      try {
+        // Create form data for API request
+        const formData = new FormData();
+        formData.append("file", file);
 
-  }
+        // Show loading indicator
+        setLoading(true);
+
+        // Send file to backend API
+        const { data } = await api.post('/products/import', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+        });
+        console.log("Import product:", data);
+        toast.success(`Total item: ${data?.totalItems}, 
+          Sucessful item: ${data.successCount},
+          Failed item: ${data?.failureCount}
+          `
+        )
+        fetchProducts();
+      } catch (error) {
+        console.log("Failed to import products: ", error?.message);
+        toast.error("Failed to import products: ")
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Trigger file input click
+    fileInput.click();
+  };
+
+  const handleExportProduct = () => {};
 
   if (errorMessage) {
     return <div>{errorMessage}</div>;
@@ -167,7 +207,7 @@ function InventoryManagement() {
             onClick={() => {
               handleImportProduct();
             }}
-            sx={{marginLeft: "10px"}}
+            sx={{ marginLeft: "10px" }}
           >
             <span>Import</span>
           </Button>
@@ -179,7 +219,7 @@ function InventoryManagement() {
             onClick={() => {
               handleExportProduct();
             }}
-            sx={{marginLeft: "10px"}}
+            sx={{ marginLeft: "10px" }}
           >
             <span>Export</span>
           </Button>
@@ -191,7 +231,7 @@ function InventoryManagement() {
             onClick={() => {
               handleAddProduct();
             }}
-            sx={{marginLeft: "10px"}}
+            sx={{ marginLeft: "10px" }}
           >
             <span>Add Product</span>
           </Button>
