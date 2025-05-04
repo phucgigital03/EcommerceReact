@@ -33,6 +33,8 @@ import Profile from "./components/profile/Profile";
 import OAuth2RedirectHandler from "./components/auth/OAuth2RedirectHandler";
 import Orders from "./components/order/Orders";
 import HomeDashboardManagement from "./components/dashboard/contents/HomeDashboardManagement";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import ResetPassword from "./components/auth/ResetPassword";
 
 // /dashboard
 // /dashboard/usermanagement
@@ -101,9 +103,6 @@ export const sidebarItems = [
 ];
 
 function App() {
-  // const { user } = useSelector((state) => state.auth);
-  // console.log("PrivateRoutes: ",user)
-
   return (
     <>
       <Router>
@@ -123,6 +122,8 @@ function App() {
           <Route path="/" element={<PrivateRoutes publicPage />}>
             <Route path="/login" element={<LogIn />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
           </Route>
 
           {/* Private Route just authenticate */}

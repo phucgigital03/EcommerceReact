@@ -106,16 +106,24 @@ function LogIn() {
               <>Login</>
             )}
           </button>
-          <div className="flex items-center justify-start">
+          <div className="flex flex-col items-start">
             <p>
-              <span className="block w-100%">
-                Do not have an account, please register here.
+              <span className="mr-2 w-100%">
+                Do not have an account 
               </span>
               <Link
                 className="underline text-blue-600 hover:text-blue-400"
                 to={"/register"}
               >
-                Register
+                Register Here.
+              </Link>
+            </p>
+            <p className="mt-2 text-sm text-blue-600 ">
+              <Link
+                className=" underline hover:text-blue-400"
+                to="/forgot-password"
+              >
+                Forgot Password?
               </Link>
             </p>
           </div>
