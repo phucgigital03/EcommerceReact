@@ -12,6 +12,7 @@ import { FaEye } from "react-icons/fa";
 import { IoPrint } from "react-icons/io5";
 import { useReactToPrint } from "react-to-print";
 import PrintableOrderContent from "../shared/PrintableOrderContent";
+import { MdCancel, MdShoppingCart } from "react-icons/md";
 
 // Styled components
 const OrderCard = styled(Paper)(({ theme }) => ({
@@ -89,13 +90,13 @@ function FilterOrder({ orderType, orders = [] }) {
       console.error("Print failed:", error);
       setOrderToPrint(null); // Reset order after print
     },
-    removeAfterPrint: true
+    removeAfterPrint: true,
   });
 
   // This function sets which order to print and triggers the print
   const triggerPrint = (order) => {
     console.log("Setting order to print:", order.orderId);
-    setOrderToPrint({...order});
+    setOrderToPrint({ ...order });
   };
 
   // When orderToPrint changes, trigger the print operation
@@ -113,12 +114,21 @@ function FilterOrder({ orderType, orders = [] }) {
           setOrderToPrint(null);
         }
       }, 300);
-      
+
       return () => {
         clearTimeout(timer);
       };
     }
   }, [orderToPrint]);
+
+
+  const handleCancel = async (orderId)=>{
+    console.log("Cancel " ,orderId)
+  }
+
+  const handleCheckOut = async (orderId)=>{
+    console.log("Checkout " ,orderId)
+  }
 
   return (
     <div className="mt-2">
@@ -134,10 +144,23 @@ function FilterOrder({ orderType, orders = [] }) {
               <p>Order ID: {order.orderId}</p>
               {
                 <div className="flex gap-x-2 justify-end items-center">
+                  {order.orderStatus == "Order pending" && (
+                    <Button
+                      className="min-w-[132px] w-[132px]"
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        handleCheckOut(order.orderId)
+                      }}
+                    >
+                      <MdShoppingCart/>
+                      <span className="ml-1">Check out</span>
+                    </Button>
+                  )}
                   <Button
                     className="min-w-[100px] w-[100px]"
                     variant="contained"
-                    color="primary"
+                    color="warning"
                     onClick={() => {
                       handleView(order.orderId);
                     }}
@@ -145,17 +168,34 @@ function FilterOrder({ orderType, orders = [] }) {
                     <FaEye />
                     <span className="ml-1">View</span>
                   </Button>
-                  <Button
-                    className="min-w-[100px] w-[100px]"
-                    variant="contained"
-                    color="error"
-                    onClick={() => {
-                      triggerPrint(order);
-                    }}
-                  >
-                    <IoPrint />
-                    <span className="ml-1">Print</span>
-                  </Button>
+                  {order.orderStatus == "Order pending" ? (
+                    <Button
+                      sx={{
+                        minWidth: "36px",
+                        width: "36px",
+                        padding: "6px 8px",
+                      }}
+                      variant="contained"
+                      color="error"
+                      onClick={() => {
+                        handleCancel(order.orderId)
+                      }}
+                    >
+                      <MdCancel size={24} />
+                    </Button>
+                  ) : (
+                    <Button
+                      className="min-w-[100px] w-[100px]"
+                      variant="contained"
+                      color="success"
+                      onClick={() => {
+                        triggerPrint(order);
+                      }}
+                    >
+                      <IoPrint />
+                      <span className="ml-1">Print</span>
+                    </Button>
+                  )}
                 </div>
               }
             </Typography>
@@ -248,12 +288,6 @@ function FilterOrder({ orderType, orders = [] }) {
                 </Box>
               </>
             )}
-
-            {/* 
-              User show generall .Having View, Check actions
-              View: show detail
-              Check: can print Order
-            */}
           </OrderCard>
         ))
       ) : (
