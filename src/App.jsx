@@ -20,6 +20,7 @@ import AccessDenied from "./components/AccessDenied";
 import DashboardManage from "./components/dashboard/DashboardManage";
 import Support from "./components/dashboard/contents/Support";
 import RbacRoute from "./components/RbacRoute";
+import ChatWidget from "./components/chat/ChatWidget";
 import { permissions } from "./config/rbacConfig";
 import { RiDashboardLine, RiUserLine, RiTruckLine } from "react-icons/ri";
 import { BiDollar, BiStore } from "react-icons/bi";
@@ -35,6 +36,8 @@ import Orders from "./components/order/Orders";
 import HomeDashboardManagement from "./components/dashboard/contents/HomeDashboardManagement";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
+import Footer from "./components/shared/Footer";
+import ProductDetails from "./components/products/ProductDetails";
 
 // /dashboard
 // /dashboard/usermanagement
@@ -112,6 +115,7 @@ function App() {
           {/* Public Route */}
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/product/:productId" element={<ProductDetails />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<Cart />} />
@@ -169,8 +173,10 @@ function App() {
           <Route path="/access-denied" element={<AccessDenied />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Footer />
       </Router>
 
+      <ChatWidget />
       <Toaster position="top-center" />
     </>
   );

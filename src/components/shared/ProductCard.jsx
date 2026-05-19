@@ -5,6 +5,7 @@ import truncateText from "../../utils/truncateText";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../store/actions";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 function ProductCard({
   productId,
@@ -55,22 +56,25 @@ function ProductCard({
         />
       </div>
       <div className="p-4">
-        <h2
-          onClick={() => {
-            handleProductView({
-              productId,
-              description,
-              image,
-              productName,
-              discount,
-              price,
-              specialPrice,
-              quantity,
-            });
-          }}
-          className="text-lg font-semibold mb-2 cursor-pointer"
-        >
-          {productName}
+        <h2 className="text-lg font-semibold mb-2">
+          <Link
+            to={`/product/${productId}`}
+            state={{
+              product: {
+                productId,
+                description,
+                image,
+                productName,
+                discount,
+                price,
+                specialPrice,
+                quantity,
+              },
+            }}
+            className="cursor-pointer hover:text-blue-600 transition"
+          >
+            {productName}
+          </Link>
         </h2>
         <div className="min-h-20 max-h-20 ">
           <p className="text-gray-600 text-sm">
